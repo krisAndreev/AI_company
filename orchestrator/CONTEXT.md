@@ -19,7 +19,8 @@ Goal (2026-09-26, owner): find a niche for teaching people to create AI e-books 
   [x] 3 owner approved niche; built 'Family Story Book Kit' v1 prod_f0102510bc64 (19p A4+Letter,
       Claude-written: 50 question cards, 7 AI prompts, planners), 7 listing images, checklist
       (`products/family-story-book-kit/v1_2026-09-26/`, EUR 7.99)
-  [ ] 4 owner reads PDF + publishes on Etsy (PUBLISH-CHECKLIST.md); then Pinterest pins
+  [~] 4 Etsy form FILLED in owner's Chrome (7 photos, 2 PDFs, cat Journal Templates, 13 tags, EUR 7.99,
+      AI generator, Manual) - waiting for owner's read of the PDF + Publish click; then Pinterest pins
 - Also due: measure DP1 ~2026-10-03 and DP2 ~2026-10-10 (Etsy Stats).
 
 ## Now: projects
@@ -104,7 +105,7 @@ Goal (2026-09-26, owner): find a niche for teaching people to create AI e-books 
   topic suggestions are useless (skip), extension promo popup after publish (Esc).
   Scheduled pins: profile > Created > "Scheduled Pins" (only visible to the owner).
 - Etsy thumbnails are square crops of photo 1: keep the hero's key content in the centre square
-  (DP2 hero v1 lost its title). Tags: type slowly (wait ~0.5 s before/after Enter) or letters get lost.
+  (DP2 hero v1 lost its title). Tags: type slowly (wait 1 s before and 1.5 s after Enter; 0.6 s still garbled 2 of 4 on DP3) or letters get lost.
   Etsy asks 'How is this digital content created?' -> 'With an AI generator' when text is AI-drafted.
 - Etsy form (2026): title 140 chars, 13 tags <= 20 chars, type Digital files (upload PDFs,
   not the zip), renewal Manual; strip tracking params from listing URLs before sharing.
