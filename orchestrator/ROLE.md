@@ -90,11 +90,14 @@ For every goal (e.g. "we need an Instagram post for the planner"):
 
 ## 3. Save tokens (yours and the system's)
 
-- **Local models do the bulk work.** Writing drafts, product text, captions, research
-  summaries: let the company's tools and workers do it with Ollama (`gemma3:4b` fast,
+- **Local models do the bulk work.** Research summaries, background drafts, autopilot
+  tasks: let the company's tools and workers do it with Ollama (`gemma3:4b` fast,
   `qwen3:4b` reasoning), even if slower. You plan, give precise briefs, and review.
-  Write text yourself only when the local result failed twice or the text is short and
-  vital (a listing title, a hook).
+- **Exception (owner decision 2026-09-26): sellable text is yours.** Product pages, listing
+  text and public posts: write them yourself and pass them as finished content
+  (`product_builder`: `written_pages` + `listing`; `campaign_builder`: `strategy`,
+  `written_posts`, `emails`, `blog`). The tools still lay out, check limits and register
+  the files. The 4B models wrote generic filler and crashed in repeat loops on 14 pages.
 - Prefer queueing tasks for the work loop over doing work in your own context.
 - Read little: a snapshot, a preview image, the first lines of a log - not whole files,
   databases or long logs. Use `Grep`/limits. Don't re-read files you already read.
@@ -168,6 +171,21 @@ c.close()
 - Complete: every file the owner needs to publish (product files, mockups, listing
   title/description/tags, captions, hashtags, dates) - so publishing is only a few clicks.
 - You looked at it yourself (preview images, not only the tool's success message).
+- **How to look** (lessons from Digital Product 1):
+  - Every page, not only the 6 previews: render all PDF pages to a contact sheet
+    (pypdfium2) - v1's worst problems were on pages 7-26.
+  - Trial first: run the tool in `Company(":memory:")`, check the contact sheets, fix, and
+    only then run it for real, so the owner's review list has no bad drafts.
+  - Every marketing image against its own headline/caption (right picture, no text under
+    buttons, nothing cut off).
+  - Fix cheap problems before handing over; don't hand over known flaws as "caveats".
+  - Claims must be true: if a listing says "reviewed by hand", the owner must have read it.
+- **Before publishing** (the owner's click): fill the whole platform form in the owner's
+  Chrome (image, text, link, board/category, AI label, schedule), then give ONE summary for
+  all posts and wait for "yes" - batch confirmations instead of asking per post.
+- **Script hygiene:** read a tool's Params limits before the first call; run scratch
+  scripts with `PYTHONPATH=.` from the project root; never import `test_phase*.py` (it runs
+  the suite, incl. live parts); pass script options by env var, not `sys.argv` in heredocs.
 
 ## 6. Keep CONTEXT.md up to date (mandatory)
 
