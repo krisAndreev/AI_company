@@ -395,7 +395,39 @@ def t_product_fit_and_clean():
     return "markdown/URLs stripped; overflowing page fits 1 page (A4+Letter); cards, certificate; "            "title-heading + month removed; quote tag cleaned; fixed page plan skips outline; "            "model crash -> 1 retry, then safe page; "            "finished pages + listing need no model"
 
 
+def t_court_and_toc():
+    import tempfile
+    import pypdfium2 as pdfium
+    from pydantic import ValidationError
+    from core.design import theme
+    from core.products import Block, ProductBrief, build_pdf, fit_blocks, _pages_used
+    from core import graphics
+    ok = Block(type="court", text="Serve", items=[
+        "title Deuce; us 70 -3 S; us 30 37 N; them 30 102 R; shot 70 -3 33 70", "---",
+        "title Ad; us 30 -3 S; move 30 37 50 44; zone 30 36 60 50; ball 50 50; note 50 20 go"])
+    for bad in (["fly 1 2"], ["us 200 5 S"], ["us 5 5 LONG"], ["shot 1 2 3"],
+                ["us 1 1", "---", "us 1 1", "---", "us 1 1", "---", "us 1 1"]):
+        expect(ValidationError, lambda: Block(type="court", items=bad))
+    t = theme("modern")
+    page = [Block(type="text", text="word " * 120), ok, Block(type="text", text="word " * 120),
+            Block(type="bullets", items=["a cue"] * 8)]
+    for fmt in ("A4", "Letter"):
+        fitted = fit_blocks(t, fmt, "Court", page)
+        assert _pages_used(t, fmt, "Court", fitted) == 1 and fitted[1].type == "court", fmt
+    # guide products get a contents page of their own, never drawn over the cover
+    brief = ProductBrief(product_type="guide", title="Guide", audience="players", pages=3)
+    pages = [(f"Page {i}", [Block(type="text", text="Some text.")]) for i in range(3)]
+    path = Path(tempfile.mkdtemp()) / "g.pdf"
+    n = build_pdf(path, t, "A4", "", brief, pages, graphics.cover_art(t, (300, 424), seed=1))
+    doc = pdfium.PdfDocument(str(path))
+    texts = [doc[i].get_textpage().get_text_range() for i in range(len(doc))]
+    assert n == 6 and "Contents" not in texts[0] and "Contents" in texts[1], texts[:2]
+    assert "Page 0" in texts[2] and all(t.strip() for t in texts[1:]), "blank page after contents"
+    return "court commands validated; diagram page fits A4+Letter; contents on page 2, no blank page"
+
+
 check("product builder: PDFs, previews, mockups, listing, bundle", t_product_build)
+check("product builder: court diagrams, contents page", t_court_and_toc)
 check("product builder: one-page fit, clean text, cards, certificate", t_product_fit_and_clean)
 check("product builder: invalid page -> safe fallback", t_page_fallback)
 check("product inside the work loop", t_product_in_worker)

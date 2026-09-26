@@ -6,12 +6,14 @@ Mode: planning   <!-- autonomous | planning (see ROLE.md 1b) -->
 
 ## Now: plan
 <!-- planning mode: goal, then numbered tasks with [x] done / [ ] open / (skipped) -->
-Goal (2026-09-26): take Digital Product 1 to a live Etsy listing - DONE.
-  [x] 1-7 review, competitor memo, v2 built, listing images, listing text, campaign, checklist
-  [x] 8 owner published on Etsy 2026-09-26
-  [x] 9 Pinterest: pin 1 live 2026-09-26; pins 2-4 scheduled Oct 1/5/9 2026 20:00
-  (5b shop About/policies/banner: offered, not approved)
-- No active plan. Suggested next: measure DP1 (~2026-10-03), then product 2.
+Goal (2026-09-26, owner asked for the whole run in one message): tennis digital product 2.
+  [x] 1 research: 3 pockets scored /25 -> winner rec doubles positioning (22/25), memo asset_c41dc6b31ef2
+  [x] 2 renderer: `court` diagram block + contents-page fix (test_phase16/18 --offline pass)
+  [x] 3 product written by Claude, trial-rendered, reviewed every page (A4+Letter), 3 rounds of fixes
+  [x] 4 built for real: prod_fe6023bde4d2 (18 pages), listing EUR 6.99 in listing.md
+  [ ] 5 listing images (cover has no tennis visual -> hero with court diagrams) + publish checklist
+  [ ] 6 owner reads PDF (listing says 'every page was reviewed'), then Etsy publish (owner OK)
+- DP1: measure ~2026-10-03.
 
 ## Now: projects
 <!-- one line each: id | name | status | stage | next step | waiting for -->
@@ -22,9 +24,14 @@ Goal (2026-09-26): take Digital Product 1 to a live Etsy listing - DONE.
   Campaign camp_b75217d9f6fb (`campaigns/screen-reset-kit-launch/v1_2026-09-26/`): Pinterest used
   (board 'Screen Time Ideas for Families', matched pin images `*-pinterest-pin-d9f6fb-2.png`);
   IG/FB posts ready but owner has no accounts. | measure | owner: Etsy Stats
+- proj_c002d70421e8 | Digital Product 2 - Tennis = 'Tennis Doubles Playbook' | PAUSED (Claude builds it) |
+  v1 built prod_fe6023bde4d2, files `workspace/projects/2026-09-26_digital-product-2-tennis_c002d70421e8/
+  products/tennis-doubles-playbook/v1_2026-09-26/` (A4+Letter PDFs, zip, listing.md, 3 mockups);
+  research `notes/2026-09-26_research-3-pockets.md` | listing images | owner: read PDF
 
 ## Now: waiting for the owner
 <!-- reviews, decisions, accounts, money, publishing -->
+- DP2: read `products/tennis-doubles-playbook/v1_2026-09-26/` PDF; go for listing images (task 5).
 - Reject old v1 drafts (Family Digital Detox Planner product + its campaign + 6 old images) and
   approve the v2 kit drafts in the dashboard (only the owner can decide assets).
 - ~2026-10-03: Etsy Stats (visits from Pinterest, favourites, sales) -> decide next steps.
@@ -53,9 +60,16 @@ Goal (2026-09-26): take Digital Product 1 to a live Etsy listing - DONE.
 - 2026-09-26: marketing on Pinterest first; the owner likes batched confirmations (fill all,
   one OK) and clicked Schedule themselves.
 - Fast checks only: `--offline` tests + one targeted live call.
+- 2026-09-26: product 2 niche = sports/tennis; research format: 3 profitable pockets (buyer, quoted
+  words, current price, score /5 competition/longevity/effort/asleep/repeat = /25), pick one winner.
 
 ## Lessons learned
 <!-- proven only; "when X, do Y, because Z (evidence)" -->
+- Research reading: Reddit is blocked for WebFetch AND the Chrome extension; Bing shows a bot check
+  (never bypass). Working sources: Etsy + Amazon search pages in Chrome (JS extract of titles/prices/
+  rating counts), Talk Tennis threads via WebFetch (`https://tt.tennis-warehouse.com/index.php?threads/<slug>.<id>/`).
+- Etsy supply is not demand: the only adult wall-practice listing had 0 sales; Amazon rating counts
+  (e.g. rec doubles books 276/295 ratings) are better proof of "already paid to solve".
 - Etsy printables (family niche) sell as KITS: challenge days, family contract, reward
   coupons, activity cards, certificate, tracker. A parent journal with text walls is weak (DP1 v1).
 - Before registering real drafts, trial-render in `Company(":memory:")` and look at contact
@@ -93,6 +107,10 @@ Goal (2026-09-26): take Digital Product 1 to a live Etsy listing - DONE.
 
 ## Changes made to the system
 <!-- YYYY-MM-DD: what changed, why, test that passed -->
+- 2026-09-26: product_builder `court` block (tennis diagrams: us/them/ball/shot/move/zone/note,
+  1-3 panels, validated by `parse_court`, shrinkable by fit_blocks); fixed guide contents page drawn
+  over the cover + blank page 2 (`fresh_page`); tools.json max_content_pages 14 -> 16.
+  test_phase16 (+ court/contents test) and test_phase18 --offline pass.
 - 2026-09-26: `orchestrator/ROLE.md` + this file; planning mode (ROLE 1b); git + GitHub push.
 - 2026-09-26: product_builder: one-page fit (fit_blocks), tidy_blocks, markdown/URL stripping,
   cards + certificate blocks, fixed `page_plan`, retry-then-fallback on model errors,
@@ -105,6 +123,9 @@ Goal (2026-09-26): take Digital Product 1 to a live Etsy listing - DONE.
   ROLE.md section 4 "Files and folders". Tests 16-19 --offline pass.
 
 ## Log (last ~2 weeks; older -> HISTORY.md)
+- 2026-09-26: DP2 tennis: research (doubles 22/25, nerves 19, solo/wall 18), Tennis Doubles Playbook
+  v1 built (15 content pages, court diagrams), reviewed + fixed (TOC over cover, small diagrams,
+  empty half pages, lobs page overflow).
 - 2026-09-26: DP1 finished: v2 kit written by Claude (16p), 7 listing images, listing text,
   checklist; owner published on Etsy; Pinterest pin 1 live, pins 2-4 scheduled Oct 1/5/9.
 - 2026-09-26: planning mode; reviewed DP1 v1 (26p generic planner) and competitors.

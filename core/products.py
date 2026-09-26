@@ -69,7 +69,53 @@ class ProductOutline(StrictModel):
 
 
 BlockType = Literal["heading", "text", "bullets", "numbered", "checklist", "lines", "table",
-                    "tracker", "calendar", "notes", "quote", "cards", "certificate"]
+                    "tracker", "calendar", "notes", "quote", "cards", "certificate", "court"]
+
+# Tennis court diagrams (block type "court"). Each item holds one or more commands separated
+# by ";". Coordinates: x 0-100 across the doubles court (0 = left sideline), y 0-100 along it
+# (0 = bottom baseline = "our" side, 50 = net, 100 = top baseline); a little space outside the
+# lines is allowed. "---" starts the next panel (max 3 side by side).
+COURT_X, COURT_Y = (-12.0, 112.0), (-10.0, 110.0)
+_COURT_ARGS = {"title": 0, "us": 2, "them": 2, "ball": 2, "shot": 4, "move": 4, "zone": 4,
+               "note": 2}
+
+
+def parse_court(items: list[str]) -> list[list[tuple]]:
+    """Court commands -> panels of (command, numbers, text). Raises ValueError on bad input."""
+    panels: list[list[tuple]] = [[]]
+    for item in items:
+        for cmd in (c.strip() for c in item.split(";")):
+            if not cmd:
+                continue
+            if cmd == "---":
+                panels.append([])
+                continue
+            name, _, rest = cmd.partition(" ")
+            name = name.lower()
+            if name not in _COURT_ARGS:
+                raise ValueError(f"unknown court command {name!r}")
+            n = _COURT_ARGS[name]
+            parts = rest.split()
+            try:
+                nums = [float(p) for p in parts[:n]]
+            except ValueError:
+                raise ValueError(f"court {name}: needs {n} numbers") from None
+            if len(nums) != n:
+                raise ValueError(f"court {name}: needs {n} numbers")
+            for i, v in enumerate(nums):
+                lo, hi = COURT_X if i % 2 == 0 else COURT_Y
+                if not lo <= v <= hi:
+                    raise ValueError(f"court {name}: coordinate {v} outside the drawing")
+            text = " ".join(parts[n:])
+            if name in ("us", "them") and len(text) > 3:
+                raise ValueError("court player labels have at most 3 characters")
+            if name in ("title", "note") and not text:
+                raise ValueError(f"court {name} needs text")
+            panels[-1].append((name, nums, text))
+    panels = [p for p in panels if p]
+    if not 1 <= len(panels) <= 3:
+        raise ValueError("a court block has 1 to 3 panels")
+    return panels
 
 
 class Block(StrictModel):
@@ -89,6 +135,8 @@ class Block(StrictModel):
             raise ValueError(f"a {self.type} block needs items")
         if self.type == "table" and not self.columns:
             raise ValueError("a table block needs columns")
+        if self.type == "court":
+            parse_court(self.items)
         return self
 
 
@@ -161,6 +209,7 @@ class ProductPDF(FPDF):
         self.chrome = False
         self.week_starts_sunday = page_format.lower() == "letter"
         self.core_fonts = False
+        self.fresh_page = False     # True: the next content page reuses the current empty page
         self._register_fonts()
         self.set_margins(self.MARGIN, self.TOP, self.MARGIN)
         self.set_auto_page_break(True, margin=self.BOTTOM)
@@ -277,7 +326,11 @@ class ProductPDF(FPDF):
                      fill_rest: bool = False):
         self.page_title = title
         self.chrome = True
-        self.add_page()
+        if self.fresh_page:
+            self.fresh_page = False
+            self.header()
+        else:
+            self.add_page()
         if section:
             try:
                 self.start_section(self.text_safe(title))
@@ -302,7 +355,11 @@ class ProductPDF(FPDF):
     def closing_page(self, title: str, paragraphs: list[str]):
         self.page_title = title
         self.chrome = True
-        self.add_page()
+        if self.fresh_page:
+            self.fresh_page = False
+            self.header()
+        else:
+            self.add_page()
         for i, p in enumerate(paragraphs):
             self.font("Body", 10.5, "B" if i % 2 == 0 else "")
             self.color("text", self.t.ink)
@@ -619,6 +676,121 @@ class ProductPDF(FPDF):
             self.cell(half, 5, label, align="C")
         self.set_y(y + h + 2)
 
+    _COURT_ASPECT = (10.97 * (COURT_X[1] - COURT_X[0])) / (23.77 * (COURT_Y[1] - COURT_Y[0]))
+
+    def _b_court(self, b: Block):
+        """1-3 top-down doubles courts side by side: players (us = accent, them = grey),
+        ball, shots (solid arrows), movement (dashed arrows), zones and small notes.
+        count = drawing height in 4 mm steps (default 24 = 96 mm)."""
+        panels = parse_court(b.items)
+        self._label(b.text)
+        gap = 6
+        slot_w = (self.epw - gap * (len(panels) - 1)) / len(panels)
+        has_title = any(c[0] == "title" for p in panels for c in p)
+        cap_h = 7 if has_title else 0
+        h = min((b.count or 24) * 4, slot_w / self._COURT_ASPECT)
+        self.ensure(h + cap_h + 2)
+        y0 = self.get_y()
+        for i, panel in enumerate(panels):
+            w = h * self._COURT_ASPECT
+            x0 = self.MARGIN + i * (slot_w + gap) + (slot_w - w) / 2
+            title = next((c[2] for c in panel if c[0] == "title"), "")
+            if title:
+                self.font("S", 10)
+                self.color("text", self.t.accent)
+                self.set_xy(self.MARGIN + i * (slot_w + gap), y0)
+                self.cell(slot_w, 6, self.text_safe(title), align="C")
+            self._court(panel, x0, y0 + cap_h, w, h)
+        self.set_y(y0 + cap_h + h + 1)
+
+    def _court(self, panel: list[tuple], x0: float, y0: float, w: float, h: float):
+        sx = w / (COURT_X[1] - COURT_X[0])
+        sy = h / (COURT_Y[1] - COURT_Y[0])
+        px = lambda x: x0 + (x - COURT_X[0]) * sx
+        py = lambda y: y0 + (COURT_Y[1] - y) * sy          # y = 0 (our baseline) at the bottom
+        svc = 6.40 / 23.77 * 100                            # service line distance from the net
+        alley = 1.37 / 10.97 * 100
+        # surface + lines
+        self.color("fill", self.t.soft)
+        self.rect(x0, y0, w, h, style="F", round_corners=True, corner_radius=2)
+        with self.local_context(fill_opacity=0.30):         # playing surface
+            self.color("fill", self.t.accent)
+            self.rect(px(0), py(100), 100 * sx, 100 * sy, style="F")
+        for name, n, _ in panel:                            # zones under the lines
+            if name == "zone":
+                with self.local_context(fill_opacity=0.45):
+                    self.color("fill", self.t.accent2)
+                    self.rect(px(min(n[0], n[2])), py(max(n[1], n[3])), abs(n[2] - n[0]) * sx,
+                              abs(n[3] - n[1]) * sy, style="F")
+        self.color("draw", "#FFFFFF")
+        self.set_line_width(0.6)
+        self.rect(px(0), py(100), 100 * sx, 100 * sy)
+        self.set_line_width(0.45)
+        for x in (alley, 100 - alley):
+            self.line(px(x), py(0), px(x), py(100))
+        for y in (50 - svc, 50 + svc):
+            self.line(px(alley), py(y), px(100 - alley), py(y))
+        self.line(px(50), py(50 - svc), px(50), py(50 + svc))
+        for y in (0, 100):                                  # centre marks
+            self.line(px(50), py(y), px(50), py(y + (2 if y == 0 else -2)))
+        self.color("draw", self.t.ink)
+        self.set_line_width(0.8)
+        self.line(px(-4), py(50), px(104), py(50))          # net + posts
+        self.color("fill", self.t.ink)
+        for x in (-4, 104):
+            self.ellipse(px(x) - 0.7, py(50) - 0.7, 1.4, 1.4, style="F")
+        # arrows, then players/ball on top, then notes
+        for name, n, _ in panel:
+            if name in ("shot", "move"):
+                self._arrow(px(n[0]), py(n[1]), px(n[2]), py(n[3]), dashed=name == "move")
+        r = max(2.6, min(4.2, w * 0.068))
+        for name, n, text in panel:
+            if name in ("us", "them"):
+                self.color("fill", self.t.accent if name == "us" else "#8A8F98")
+                self.color("draw", "#FFFFFF")
+                self.set_line_width(0.4)
+                self.ellipse(px(n[0]) - r, py(n[1]) - r, 2 * r, 2 * r, style="DF")
+                if text:
+                    self.font("Body", r * 2.3, "B")
+                    self.color("text", "#FFFFFF")
+                    self.set_xy(px(n[0]) - r, py(n[1]) - r)
+                    self.cell(2 * r, 2 * r, self.text_safe(text), align="C")
+            elif name == "ball":
+                self.color("fill", "#D9E84A")
+                self.color("draw", self.t.ink)
+                self.set_line_width(0.25)
+                self.ellipse(px(n[0]) - 1.3, py(n[1]) - 1.3, 2.6, 2.6, style="DF")
+        for name, n, text in panel:
+            if name == "note":
+                self.font("Body", 8, "B")
+                self.color("text", self.t.ink)
+                tw = self.get_string_width(self.text_safe(text)) + 2
+                x = min(max(px(n[0]) - tw / 2, x0 + 0.5), x0 + w - tw - 0.5)
+                with self.local_context(fill_opacity=0.85):
+                    self.color("fill", "#FFFFFF")
+                    self.rect(x, py(n[1]) - 2, tw, 4, style="F", round_corners=True,
+                              corner_radius=1)
+                self.set_xy(x, py(n[1]) - 2)
+                self.cell(tw, 4, self.text_safe(text), align="C")
+
+    def _arrow(self, x1: float, y1: float, x2: float, y2: float, dashed: bool):
+        import math
+        self.color("draw", self.t.accent if dashed else self.t.accent2)
+        self.color("fill", self.t.accent if dashed else self.t.accent2)
+        self.set_line_width(0.45 if dashed else 0.6)
+        ang = math.atan2(y2 - y1, x2 - x1)
+        head = 2.6
+        bx, by = x2 - head * math.cos(ang), y2 - head * math.sin(ang)
+        if dashed:
+            self.set_dash_pattern(dash=1.4, gap=1.0)
+        self.line(x1, y1, bx, by)
+        self.set_dash_pattern()
+        spread = 0.45
+        pts = [(x2, y2),
+               (x2 - head * math.cos(ang - spread), y2 - head * math.sin(ang - spread)),
+               (x2 - head * math.cos(ang + spread), y2 - head * math.sin(ang + spread))]
+        self.polygon(pts, style="F")
+
 
 def render_toc(pdf: ProductPDF, outline):
     pdf.chrome = False
@@ -644,7 +816,9 @@ def build_pdf(path: Path, t: Theme, page_format: str, brand: str, brief: Product
     toc = brief.product_type in TEXT_HEAVY and len(pages) >= 3
     if toc:
         try:
+            pdf.add_page()          # the ToC is drawn on the page that is current here
             pdf.insert_toc_placeholder(render_toc, pages=1)
+            pdf.fresh_page = True   # fpdf already broke to the first content page
         except Exception:
             toc = False
     for title, blocks in pages:
@@ -688,7 +862,8 @@ def _pages_used(t: Theme, page_format: str, title: str, blocks: list[Block]) -> 
     return pdf.page_no()
 
 
-_SHRINK = {"lines": (8, 3), "notes": (6, 3), "table": (8, 3)}   # type: (default count, minimum)
+_SHRINK = {"lines": (8, 3), "notes": (6, 3), "table": (8, 3),   # type: (default count, minimum)
+           "court": (24, 15)}
 
 
 def fit_blocks(t: Theme, page_format: str, title: str, blocks: list[Block]) -> list[Block]:
@@ -757,7 +932,11 @@ _BLOCK_GUIDE = (
     "- calendar: text = label (an undated monthly grid)\n"
     "- cards: text = label, items = 2-12 cut-out cards, each 'Short title: one sentence' "
     "(activity cards, coupons, conversation starters)\n"
-    "- certificate: text = what was achieved (one sentence); fills the rest of the page\n")
+    "- certificate: text = what was achieved (one sentence); fills the rest of the page\n"
+    "- court: ONLY for tennis products - a court diagram; items = commands 'us X Y label', "
+    "'them X Y label', 'ball X Y', 'shot X1 Y1 X2 Y2', 'move X1 Y1 X2 Y2', 'zone X1 Y1 X2 Y2', "
+    "'note X Y text', 'title text', '---' = next panel (max 3). X 0-100 across, Y 0 = our "
+    "baseline, 50 = net, 100 = far baseline\n")
 
 
 def _page_guidance(ptype: str) -> str:
