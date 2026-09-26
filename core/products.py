@@ -43,6 +43,11 @@ _PLACEHOLDER = re.compile(r"lorem ipsum|\[insert|\[your|\{\{|todo:|xxx", re.I)
 
 # --- what the model may propose --------------------------------------------------------------
 
+class PagePlan(StrictModel):
+    title: str = Field(min_length=2, max_length=60)
+    purpose: str = Field(min_length=5, max_length=240)
+
+
 class ProductBrief(StrictModel):
     product_type: ProductType
     title: str = Field(min_length=3, max_length=70)
@@ -53,11 +58,9 @@ class ProductBrief(StrictModel):
     pages: int = Field(default=8, ge=3, le=24,
                        description="content pages (cover, contents and license are added by code)")
     theme: ThemeName = "modern"
-
-
-class PagePlan(StrictModel):
-    title: str = Field(min_length=2, max_length=60)
-    purpose: str = Field(min_length=5, max_length=240)
+    page_plan: list[PagePlan] = Field(
+        default_factory=list, max_length=24,
+        description="optional fixed page list (title + purpose); if given, no outline is planned")
 
 
 class ProductOutline(StrictModel):
@@ -65,7 +68,7 @@ class ProductOutline(StrictModel):
 
 
 BlockType = Literal["heading", "text", "bullets", "numbered", "checklist", "lines", "table",
-                    "tracker", "calendar", "notes", "quote"]
+                    "tracker", "calendar", "notes", "quote", "cards", "certificate"]
 
 
 class Block(StrictModel):
@@ -79,9 +82,9 @@ class Block(StrictModel):
 
     @model_validator(mode="after")
     def _check(self):
-        if self.type in ("heading", "text", "quote") and not self.text.strip():
+        if self.type in ("heading", "text", "quote", "certificate") and not self.text.strip():
             raise ValueError(f"a {self.type} block needs text")
-        if self.type in ("bullets", "numbered", "checklist", "tracker") and not self.items:
+        if self.type in ("bullets", "numbered", "checklist", "tracker", "cards") and not self.items:
             raise ValueError(f"a {self.type} block needs items")
         if self.type == "table" and not self.columns:
             raise ValueError("a table block needs columns")
@@ -104,7 +107,8 @@ class ProductListing(StrictModel):
     def _tags(cls, v):
         seen = []
         for tag in v:
-            tag = re.sub(r"\s+", " ", tag.strip().lower())
+            tag = re.sub(r"[\"'“”‘’`]", "", tag)
+            tag = re.sub(r"\s+", " ", tag.strip(" ,.;:").lower())
             if tag and tag not in seen:
                 seen.append(tag)
         return seen
@@ -122,7 +126,12 @@ def clean_text(text: str) -> str:
         text = text.replace(a, b)
     text = _EMOJI.sub("", text)
     text = re.sub(r"[\x00-\x08\x0b-\x1f\x7f]", "", text)
-    return re.sub(r"__(\S[^_]*?\S)__", r"\1", text.replace("**", "")).strip()
+    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)          # markdown links -> label
+    text = re.sub(r"\(?\bhttps?://\S+?\)?(?=[\s,;]|$)", "", text)  # no web addresses in print
+    text = re.sub(r"^#+\s*", "", text, flags=re.M)
+    text = re.sub(r"__(\S[^_]*?\S)__", r"\1", text.replace("**", ""))
+    text = re.sub(r"(?<![\w*])\*(\S(?:[^*\n]*?\S)?)\*(?![\w*])", r"\1", text)   # *emphasis*
+    return re.sub(r"[ ]{2,}", " ", text).strip()
 
 
 class ProductPDF(FPDF):
@@ -509,6 +518,92 @@ class ProductPDF(FPDF):
         self.rect(self.MARGIN, y, 1.6, max(6.4, self.get_y() - y), style="F")
         self.ln(1)
 
+    def _b_cards(self, b: Block):
+        """Cut-out cards in two columns (activity cards, coupons). 'Title: detail' items get a
+        bold title line."""
+        gap, cols = 4, 2
+        rows = -(-len(b.items) // cols)
+        self._label(b.text)
+        avail = self.body_bottom() - self.get_y() - 2
+        card_h = min(48, (avail + gap) / rows - gap)
+        if card_h < 26:                     # too many cards for the space: fit_blocks trims them
+            card_h = 26
+        card_w = (self.epw - gap) / cols
+        y0 = self.get_y()
+        for i, item in enumerate(b.items):
+            x = self.MARGIN + (i % cols) * (card_w + gap)
+            y = y0 + (i // cols) * (card_h + gap)
+            if y + card_h > self.body_bottom():
+                self.add_page()
+                y0 = self.get_y() - (i // cols) * (card_h + gap)
+                y = self.get_y()
+            self.color("draw", self.t.line)
+            self.set_line_width(0.3)
+            self.set_dash_pattern(dash=1.6, gap=1.2)
+            self.rect(x, y, card_w, card_h, style="D", round_corners=True, corner_radius=2.5)
+            self.set_dash_pattern()
+            title, _, detail = item.partition(": ") if ": " in item[:60] else ("", "", item)
+            self.set_xy(x + 4, y + 4)
+            if title:
+                self.font("S", 11)
+                self.color("text", self.t.accent)
+                self.multi_cell(card_w - 8, 5.6, self.text_safe(title), align="C",
+                                new_x=XPos.LEFT, new_y=YPos.NEXT)
+                self.ln(1)
+                self.set_x(x + 4)
+            self.font("Body", 9.5)
+            self.color("text", self.t.ink)
+            self.multi_cell(card_w - 8, 4.8, self.text_safe(detail), align="C",
+                            new_x=XPos.LEFT, new_y=YPos.NEXT)
+        self.set_y(y0 + rows * (card_h + gap))
+
+    def _b_certificate(self, b: Block):
+        """A framed certificate filling the rest of the page: award line, name, date, signature."""
+        y = self.get_y() + 2
+        h = self.body_bottom() - y - 4
+        if h < 120:
+            self.add_page()
+            y = self.get_y() + 2
+            h = self.body_bottom() - y - 4
+        self.color("draw", self.t.accent)
+        self.set_line_width(1.2)
+        self.rect(self.MARGIN, y, self.epw, h, style="D", round_corners=True, corner_radius=4)
+        self.color("draw", self.t.accent2)
+        self.set_line_width(0.4)
+        self.rect(self.MARGIN + 4, y + 4, self.epw - 8, h - 8, style="D", round_corners=True,
+                  corner_radius=3)
+        inner = self.epw - 30
+        self.set_xy(self.MARGIN + 15, y + h * 0.16)
+        self.font("H", 26)
+        self.color("text", self.t.accent)
+        self.multi_cell(inner, 12, "Certificate", align="C", new_x=XPos.LEFT, new_y=YPos.NEXT)
+        self.font("S", 14)
+        self.multi_cell(inner, 8, "of Completion", align="C", new_x=XPos.LEFT, new_y=YPos.NEXT)
+        self.ln(12)
+        self.font("Body", 11)
+        self.color("text", self.t.ink)
+        self.multi_cell(inner, 6, "This certificate is proudly presented to", align="C",
+                        new_x=XPos.LEFT, new_y=YPos.NEXT)
+        self.ln(16)
+        self.color("draw", self.t.line)
+        self.set_line_width(0.4)
+        yy = self.get_y()
+        self.line(self.MARGIN + 30, yy, self.MARGIN + self.epw - 30, yy)
+        self.ln(10)
+        self.font("Body", 11.5, "I")
+        self.color("text", self.t.ink)
+        self.multi_cell(inner, 6.4, self.text_safe(b.text), align="C",
+                        new_x=XPos.LEFT, new_y=YPos.NEXT)
+        yy = y + h - 34
+        half = (self.epw - 50) / 2
+        for k, label in enumerate(("Date", "Signed")):
+            x = self.MARGIN + 18 + k * (half + 14)
+            self.line(x, yy, x + half, yy)
+            self.set_xy(x, yy + 2)
+            self.font("Body", 9.5)
+            self.cell(half, 5, label, align="C")
+        self.set_y(y + h + 2)
+
 
 def render_toc(pdf: ProductPDF, outline):
     pdf.chrome = False
@@ -554,6 +649,64 @@ def build_pdf(path: Path, t: Theme, page_format: str, brand: str, brief: Product
     return pdf.page_no()
 
 
+_MONTHS = re.compile(r"\b(january|february|march|april|may|june|july|august|september|october|"
+                     r"november|december)\b", re.I)
+
+
+def tidy_blocks(title: str, blocks: list[Block]) -> list[Block]:
+    """Code-side fixes for common model slips: a heading that repeats the page title, and dated
+    calendars in an undated printable."""
+    norm = lambda s: re.sub(r"\W+", " ", s).strip().lower()
+    out = []
+    for b in blocks:
+        if b.type == "heading" and norm(b.text) == norm(title) and len(blocks) > 1:
+            continue
+        if b.type == "calendar" and _MONTHS.search(b.text):
+            b = b.model_copy(update={"text": "Month: ____________________"})
+        out.append(b)
+    return out or blocks
+
+
+def _pages_used(t: Theme, page_format: str, title: str, blocks: list[Block]) -> int:
+    pdf = ProductPDF(t, page_format, "", "fit")
+    pdf.content_page(title, blocks)
+    return pdf.page_no()
+
+
+_SHRINK = {"lines": (8, 3), "notes": (6, 3), "table": (8, 3)}   # type: (default count, minimum)
+
+
+def fit_blocks(t: Theme, page_format: str, title: str, blocks: list[Block]) -> list[Block]:
+    """Make one planned page fit on one printed page: first shorten fill-in areas (writing
+    lines, notes, table rows), then trim card/tracker/list rows, then drop trailing blocks.
+    A spill-over page padded with 'Notes' is filler a buyer notices."""
+    blocks = list(blocks)
+    for _ in range(60):
+        if _pages_used(t, page_format, title, blocks) <= 1:
+            return blocks
+        best, best_size = None, 0
+        for i, b in enumerate(blocks):
+            if b.type in _SHRINK:
+                default, low = _SHRINK[b.type]
+                size = b.count or default
+                if size > low and size > best_size:
+                    best, best_size = i, size
+        if best is not None:
+            blocks[best] = blocks[best].model_copy(update={"count": max(_SHRINK[blocks[best].type][1],
+                                                                        best_size - 2)})
+            continue
+        trim = next((i for i in range(len(blocks) - 1, -1, -1)
+                     if blocks[i].type in ("cards", "tracker", "checklist", "bullets", "numbered")
+                     and len(blocks[i].items) > 2), None)
+        if trim is not None:
+            blocks[trim] = blocks[trim].model_copy(update={"items": blocks[trim].items[:-1]})
+        elif len(blocks) > 1:
+            blocks.pop()
+        else:
+            return blocks
+    return blocks
+
+
 def render_previews(pdf_path: Path, out_dir: Path, max_pages: int = 8,
                     width_px: int = 1200) -> list[Path]:
     import pypdfium2 as pdfium
@@ -584,8 +737,12 @@ _BLOCK_GUIDE = (
     "- lines: text = label/question, count = writing lines (3-20)\n"
     "- notes: text = label, count = box height in lines (4-20)\n"
     "- table: text = label, columns = 2-6 column headers, count = empty rows to fill (3-20)\n"
-    "- tracker: text = label, items = rows (e.g. habits), count = days (7 or 31)\n"
-    "- calendar: text = label (an undated monthly grid)\n")
+    "- tracker: text = label, items = rows of yes/no habits to TICK, count = days (7 or 31). "
+    "Never for amounts (minutes, hours, money): use a table for those\n"
+    "- calendar: text = label (an undated monthly grid)\n"
+    "- cards: text = label, items = 2-12 cut-out cards, each 'Short title: one sentence' "
+    "(activity cards, coupons, conversation starters)\n"
+    "- certificate: text = what was achieved (one sentence); fills the rest of the page\n")
 
 
 def _page_guidance(ptype: str) -> str:
@@ -632,13 +789,16 @@ class ProductTool(Tool):
                 + f"\nType: {brief.product_type}. Audience: {brief.audience}.\n"
                 + (f"Must contain: {brief.content_notes}\n" if brief.content_notes else ""))
 
-        outline = ctx.generate(
-            f"{background}{head}\nPlan exactly {brief.pages} content pages for this product "
-            f"(the cover and licence page are added automatically - do not include them). "
-            f"Each page needs a short title and its purpose. Make the pages build a complete, "
-            f"useful product in a sensible order.",
-            ProductOutline, system="You design best-selling digital products. Be specific.")
-        plans = outline.pages[:brief.pages]
+        if brief.page_plan:
+            plans = brief.page_plan[:self.settings.max_content_pages]
+        else:
+            outline = ctx.generate(
+                f"{background}{head}\nPlan exactly {brief.pages} content pages for this product "
+                f"(the cover and licence page are added automatically - do not include them). "
+                f"Each page needs a short title and its purpose. Make the pages build a complete, "
+                f"useful product in a sensible order.",
+                ProductOutline, system="You design best-selling digital products. Be specific.")
+            plans = outline.pages[:brief.pages]
 
         pages: list[tuple[str, list[Block]]] = []
         for i, plan in enumerate(plans, start=1):
@@ -648,7 +808,9 @@ class ProductTool(Tool):
                     f"Pages in this product: {', '.join(p.title for p in plans)}\n\n"
                     f"{_BLOCK_GUIDE}\n{_page_guidance(brief.product_type)}\n"
                     "Write real, specific content: no placeholders such as 'Lorem ipsum' or "
-                    "'[insert]'. Do not repeat the page title as a heading.",
+                    "'[insert]'. Do not repeat the page title as a heading. Plain text only: no "
+                    "markdown, no web addresses, no brand, app or organisation names. Everything "
+                    "must fit on ONE printed page.",
                     PageContent, system="You write and design pages for digital products.",
                     temperature=0.5)
                 blocks = content.blocks
@@ -656,6 +818,13 @@ class ProductTool(Tool):
                 warnings.append(f"page {i} '{plan.title}': model output invalid, used a notes page")
                 blocks = [Block(type="notes", text=plan.purpose[:200], count=18)]
                 ctx.log(ACTOR, "Page fallback", product=product_id, page=i, errors=e.errors[-1:])
+            blocks = tidy_blocks(plan.title, blocks)
+            for fmt in self.settings.formats:
+                fitted = fit_blocks(t, fmt, plan.title, blocks)
+                if len(fitted) < len(blocks):
+                    warnings.append(f"page {i} '{plan.title}': dropped {len(blocks) - len(fitted)} "
+                                    f"block(s) to fit one page")
+                blocks = fitted
             pages.append((plan.title, blocks))
             if any(_PLACEHOLDER.search(b.text + " ".join(b.items)) for b in blocks):
                 warnings.append(f"page {i} '{plan.title}' contains placeholder text - review it")

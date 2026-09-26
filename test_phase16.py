@@ -350,7 +350,35 @@ def t_budget_guard():
     return msg[:110]
 
 
+def t_product_fit_and_clean():
+    from core.design import theme
+    from core.products import Block, ProductListing, clean_text, fit_blocks, tidy_blocks, _pages_used
+    raw = "It's not *how much* but *when*. See [https://x.org/](https://x.org/) - ok"
+    txt = clean_text(raw)
+    assert "*" not in txt and "http" not in txt and "how much" in txt, txt
+    t = theme("modern")
+    big = [Block(type="text", text="word " * 150), Block(type="table", text="Log", columns=["A", "B"],
+           count=20), Block(type="lines", text="Why?", count=20),
+           Block(type="cards", text="Cards", items=[f"Card {i}: do a thing" for i in range(12)])]
+    assert _pages_used(t, "A4", "P", big) > 1
+    for fmt in ("A4", "Letter"):
+        assert _pages_used(t, fmt, "P", fit_blocks(t, fmt, "P", big)) == 1
+    cert = [Block(type="certificate", text="Completed the 7-day reset")]
+    assert _pages_used(t, "Letter", "C", cert) == 1
+    tidy = tidy_blocks("Day 1: Start", [Block(type="heading", text="Day 1 - Start"),
+                                        Block(type="calendar", text="January")])
+    assert [b.type for b in tidy] == ["calendar"] and "January" not in tidy[0].text
+    tags = ProductListing(**{**LISTING, "tags": LISTING["tags"] + ['digital wellbeing”,']}).tags
+    assert tags[-1] == "digital wellbeing", tags
+    c, fake = company({"PageContent": page_reply, "ProductListing": LISTING}, "plan")
+    p = c.orchestrator.create_project("P", "x", 5)
+    c.run_tool("product_builder", {**BRIEF, "page_plan": OUTLINE["pages"]}, p.id)
+    assert "ProductOutline" not in fake.calls
+    return "markdown/URLs stripped; overflowing page fits 1 page (A4+Letter); cards, certificate; "            "title-heading + month removed; quote tag cleaned; fixed page plan skips outline"
+
+
 check("product builder: PDFs, previews, mockups, listing, bundle", t_product_build)
+check("product builder: one-page fit, clean text, cards, certificate", t_product_fit_and_clean)
 check("product builder: invalid page -> safe fallback", t_page_fallback)
 check("product inside the work loop", t_product_in_worker)
 check("paid tool refused before running when over budget", t_budget_guard)

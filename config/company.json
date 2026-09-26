@@ -4,7 +4,7 @@
   "min_decision_confidence": 0.6,
   "max_tasks_per_plan": 5,
   "max_task_retries": 2,
-  "brand_name": "",
+  "brand_name": "KrokiCrafts",
   "autopilot": true,
   "autopilot_max_project_budget_eur": 25,
   "max_stages_per_project": 6,

@@ -222,7 +222,8 @@ def pages_grid(pages: list[Image.Image], t: Theme, label: str,
     top = int(h * 0.2)
     for i, page in enumerate(shown):
         p = contain_fit(page.convert("RGB"), (int(cell_w * 0.86), int(cell_h * 0.9)))
-        cx = (w - area_w) // 2 + (i % cols) * cell_w + (cell_w - p.width) // 2
+        in_row = min(cols, len(shown) - (i // cols) * cols)     # centre a short last row
+        cx = (w - in_row * cell_w) // 2 + (i % cols) * cell_w + (cell_w - p.width) // 2
         cy = top + (i // cols) * cell_h + (cell_h - p.height) // 2
         paste_with_shadow(canvas, p, (cx, cy), blur=max(8, w // 150), offset=(0, w // 200))
     badge_h = int(h * 0.11)

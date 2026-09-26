@@ -34,7 +34,7 @@
       "cost_per_call_eur": 0,
       "max_calls_per_day": 10,
       "allowed_hosts": [],
-      "settings": {"formats": ["A4", "Letter"], "preview_pages": 6, "write_listing": true, "max_content_pages": 12}
+      "settings": {"formats": ["A4", "Letter"], "preview_pages": 6, "write_listing": true, "max_content_pages": 14}
     },
     "image_studio": {
       "enabled": true,
