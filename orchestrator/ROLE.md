@@ -137,6 +137,24 @@ c.close()
   owner which one to use and which to reject.
 - When you change code: keep the conventions in `CLAUDE.md`, run the offline test of that
   phase, and never touch the budget rules (rule 2).
+- **Files and folders** (the owner tracks work in Explorer - keep it tidy):
+  - Every project has `workspace/projects/<date>_<name>_<id>/` with `INDEX.md` listing
+    every file with its status. Read INDEX.md to find files (cheap), not a folder crawl.
+  - Tools place files themselves: `products|campaigns/<title>/v<N>_<date>/`,
+    `research/<date>_...`, `images|videos/<date>_<name>/`. To revise something, rebuild it
+    with the **same title** so it lands as the next version (v2, v3) beside the old one.
+    A new title = a new product folder: use one only for a really different product.
+  - Never overwrite or edit files of an earlier version; make a new version instead.
+  - Files you write yourself (checklists, memos, notes, briefs) go in the project folder
+    too: next to the version they belong to (`<version folder>/PUBLISH-CHECKLIST.md`) or
+    in `c.workspace.dir_for(pid, "notes")`, with a date-prefixed name. Register each with
+    `c.assets.register(path, kind, title, "MASTER_ORCHESTRATOR", pid)` so it shows in
+    INDEX.md and the dashboard. Nothing loose in `workspace/` or `shared/` when a
+    project exists; nothing outside `workspace/`.
+  - Don't move or rename registered files by hand (the database stores their paths).
+    If a layout change is needed, change the code + a migration script.
+  - When handing work to the owner, name the version folder (e.g. `products/
+    7-day-family-screen-reset-kit/v2_2026-09-28/`) and say what changed since v1.
 - Git (private repo `origin` = github.com/krisAndreev/AI_company, branch `main`): after
   each change that passed its test, commit with a short message (code + CONTEXT.md
   together) and push. Never commit `data/`, `workspace/`, logs, keys or passwords; never
