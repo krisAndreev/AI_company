@@ -14,7 +14,9 @@ Goal (2026-09-26, owner asked for the whole run in one message): tennis digital 
   [x] 5 7 listing images `mockups/listing-01..07-*.jpg` (hero = big court diagram, close-ups) +
       PUBLISH-CHECKLIST.md (asset_ce923f06c022)
   [x] 6a owner read the PDF (2026-09-26)
-  [ ] 6b Etsy form filled in owner's Chrome (not saved) - waiting for owner's Publish OK
+  [x] 6b owner published on Etsy 2026-09-26: https://www.etsy.com/listing/4583127470
+  [ ] 7 Pinterest: 4 pins drafted in owner's Chrome (`campaigns/doubles-playbook-pinterest/v1_2026-09-26/`,
+      PINS.md); pin 1 now, 2-4 on Sep 29 / Oct 3 / Oct 7 20:00; new board 'Tennis Doubles Tips' - owner OK
 - DP1: measure ~2026-10-03.
 
 ## Now: projects
@@ -26,15 +28,14 @@ Goal (2026-09-26, owner asked for the whole run in one message): tennis digital 
   Campaign camp_b75217d9f6fb (`campaigns/screen-reset-kit-launch/v1_2026-09-26/`): Pinterest used
   (board 'Screen Time Ideas for Families', matched pin images `*-pinterest-pin-d9f6fb-2.png`);
   IG/FB posts ready but owner has no accounts. | measure | owner: Etsy Stats
-- proj_c002d70421e8 | Digital Product 2 - Tennis = 'Tennis Doubles Playbook' | PAUSED (Claude builds it) |
+- proj_c002d70421e8 | Digital Product 2 - Tennis = 'Tennis Doubles Playbook' | PAUSED (Claude runs it) | LIVE on Etsy https://www.etsy.com/listing/4583127470 (EUR 6.99) |
   v1 built prod_fe6023bde4d2, files `workspace/projects/2026-09-26_digital-product-2-tennis_c002d70421e8/
   products/tennis-doubles-playbook/v1_2026-09-26/` (A4+Letter PDFs, zip, listing.md, 3 mockups);
   research `notes/2026-09-26_research-3-pockets.md`; 7 listing images + checklist | publish | owner: read PDF
 
 ## Now: waiting for the owner
 <!-- reviews, decisions, accounts, money, publishing -->
-- DP2: Etsy form filled (title shortened to 84 chars, category Racquet Sports/Tennis, AI generator,
-  hero `listing-01-hero-square.jpg`) - owner's yes to Publish.
+- DP2: yes for board 'Tennis Doubles Tips' + pin 1 publish + pins 2-4 schedule. ~2026-10-10: Etsy Stats.
 - Reject old v1 drafts (Family Digital Detox Planner product + its campaign + 6 old images) and
   approve the v2 kit drafts in the dashboard (only the owner can decide assets).
 - ~2026-10-03: Etsy Stats (visits from Pinterest, favourites, sales) -> decide next steps.
