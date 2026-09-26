@@ -11,7 +11,8 @@ Goal (2026-09-26, owner asked for the whole run in one message): tennis digital 
   [x] 2 renderer: `court` diagram block + contents-page fix (test_phase16/18 --offline pass)
   [x] 3 product written by Claude, trial-rendered, reviewed every page (A4+Letter), 3 rounds of fixes
   [x] 4 built for real: prod_fe6023bde4d2 (18 pages), listing EUR 6.99 in listing.md
-  [ ] 5 listing images (cover has no tennis visual -> hero with court diagrams) + publish checklist
+  [x] 5 7 listing images `mockups/listing-01..07-*.jpg` (hero = big court diagram, close-ups) +
+      PUBLISH-CHECKLIST.md (asset_ce923f06c022)
   [ ] 6 owner reads PDF (listing says 'every page was reviewed'), then Etsy publish (owner OK)
 - DP1: measure ~2026-10-03.
 
@@ -27,11 +28,11 @@ Goal (2026-09-26, owner asked for the whole run in one message): tennis digital 
 - proj_c002d70421e8 | Digital Product 2 - Tennis = 'Tennis Doubles Playbook' | PAUSED (Claude builds it) |
   v1 built prod_fe6023bde4d2, files `workspace/projects/2026-09-26_digital-product-2-tennis_c002d70421e8/
   products/tennis-doubles-playbook/v1_2026-09-26/` (A4+Letter PDFs, zip, listing.md, 3 mockups);
-  research `notes/2026-09-26_research-3-pockets.md` | listing images | owner: read PDF
+  research `notes/2026-09-26_research-3-pockets.md`; 7 listing images + checklist | publish | owner: read PDF
 
 ## Now: waiting for the owner
 <!-- reviews, decisions, accounts, money, publishing -->
-- DP2: read `products/tennis-doubles-playbook/v1_2026-09-26/` PDF; go for listing images (task 5).
+- DP2: read the PDF (all 18 pages), then publish on Etsy per `PUBLISH-CHECKLIST.md` (owner OK).
 - Reject old v1 drafts (Family Digital Detox Planner product + its campaign + 6 old images) and
   approve the v2 kit drafts in the dashboard (only the owner can decide assets).
 - ~2026-10-03: Etsy Stats (visits from Pinterest, favourites, sales) -> decide next steps.
@@ -45,6 +46,8 @@ Goal (2026-09-26, owner asked for the whole run in one message): tennis digital 
 - Etsy prices/stats not readable by tools (robots, no ETSY_API_KEY) -> owner checks by eye.
 - campaign_builder picks post visuals by rotation, not by meaning -> check every image against
   its headline; a per-post visual choice would fix it (not built yet).
+- Listing images are made by one-off scratch scripts (DP1 and DP2, not in git) -> a reusable
+  `listing_images` step in product_builder (headline + pages + close-up) would save a session.
 - test_phase19 'refused action' test fails on the Windows console (UnicodeEncodeError on the
   warning-sign char); pre-existing, not yet fixed.
 
@@ -125,7 +128,7 @@ Goal (2026-09-26, owner asked for the whole run in one message): tennis digital 
 ## Log (last ~2 weeks; older -> HISTORY.md)
 - 2026-09-26: DP2 tennis: research (doubles 22/25, nerves 19, solo/wall 18), Tennis Doubles Playbook
   v1 built (15 content pages, court diagrams), reviewed + fixed (TOC over cover, small diagrams,
-  empty half pages, lobs page overflow).
+  empty half pages, lobs page overflow). 7 listing images + publish checklist made and reviewed.
 - 2026-09-26: DP1 finished: v2 kit written by Claude (16p), 7 listing images, listing text,
   checklist; owner published on Etsy; Pinterest pin 1 live, pins 2-4 scheduled Oct 1/5/9.
 - 2026-09-26: planning mode; reviewed DP1 v1 (26p generic planner) and competitors.
