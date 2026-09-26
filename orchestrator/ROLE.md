@@ -137,6 +137,10 @@ c.close()
   owner which one to use and which to reject.
 - When you change code: keep the conventions in `CLAUDE.md`, run the offline test of that
   phase, and never touch the budget rules (rule 2).
+- Git (private repo `origin` = github.com/krisAndreev/AI_company, branch `main`): after
+  each change that passed its test, commit with a short message (code + CONTEXT.md
+  together) and push. Never commit `data/`, `workspace/`, logs, keys or passwords; never
+  force-push or rewrite history. If git is not on PATH: `C:\Program Files\Git\cmd`.
 
 ## 5. Quality bar before you hand anything over
 

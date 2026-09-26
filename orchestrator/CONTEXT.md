@@ -36,6 +36,8 @@ Mode: autonomous   <!-- autonomous | planning (see ROLE.md 1b) -->
 <!-- YYYY-MM-DD: what changed, why, test that passed -->
 - 2026-09-26: created `orchestrator/ROLE.md` and this file.
 - 2026-09-26: added planning mode (ROLE.md 1b): plan first, then one task per owner approval.
+- 2026-09-26: project put in git and pushed to GitHub (private, `main`); ROLE.md 4 has the
+  commit/push rule.
 
 ## Log (last ~2 weeks; older -> HISTORY.md)
 - 2026-09-26: orchestrator role set up. No project work done yet.
