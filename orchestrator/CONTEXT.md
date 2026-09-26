@@ -19,8 +19,10 @@ Goal (2026-09-26, owner): find a niche for teaching people to create AI e-books 
   [x] 3 owner approved niche; built 'Family Story Book Kit' v1 prod_f0102510bc64 (19p A4+Letter,
       Claude-written: 50 question cards, 7 AI prompts, planners), 7 listing images, checklist
       (`products/family-story-book-kit/v1_2026-09-26/`, EUR 7.99)
-  [~] 4 Etsy form FILLED in owner's Chrome (7 photos, 2 PDFs, cat Journal Templates, 13 tags, EUR 7.99,
-      AI generator, Manual) - waiting for owner's read of the PDF + Publish click; then Pinterest pins
+  [x] 4 owner read + published: LIVE https://www.etsy.com/listing/4583157654 (EUR 7.99)
+  [ ] 5 Pinterest: 4 pin images drafted in scratch (dp3_pins.py: questions/steps/prompt/gift, v2 layout
+      fixes not yet viewed) -> re-render into campaigns/family-story-kit-pinterest/, register, fill in
+      Chrome (board 'Family Story Ideas', link listing 4583157654, AI-modified), owner OK
 - Also due: measure DP1 ~2026-10-03 and DP2 ~2026-10-10 (Etsy Stats).
 
 ## Now: projects
@@ -40,8 +42,6 @@ Goal (2026-09-26, owner): find a niche for teaching people to create AI e-books 
 
 ## Now: waiting for the owner
 <!-- reviews, decisions, accounts, money, publishing -->
-- DP3: read `family-story-book-kit-A4.pdf` (listing says 'reviewed by hand'), then publish on Etsy
-  via `PUBLISH-CHECKLIST.md`; send URL -> Claude does Pinterest.
 - ~2026-10-10: DP2 Etsy Stats (visits from Pinterest, favourites, sales). Reject old DP2 hero
   `listing-01-hero.jpg` (replaced by `listing-01-hero-square.jpg`) in the dashboard.
 - Reject old v1 drafts (Family Digital Detox Planner product + its campaign + 6 old images) and
