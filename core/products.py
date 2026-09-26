@@ -587,12 +587,13 @@ class ProductPDF(FPDF):
                   corner_radius=3)
         inner = self.epw - 30
         self.set_xy(self.MARGIN + 15, y + h * 0.16)
-        self.font("H", 26)
+        self.font("H", 36)
         self.color("text", self.t.accent)
-        self.multi_cell(inner, 12, "Certificate", align="C", new_x=XPos.LEFT, new_y=YPos.NEXT)
+        self.multi_cell(inner, 16, "Certificate", align="C", new_x=XPos.LEFT, new_y=YPos.NEXT)
         self.font("S", 14)
         self.multi_cell(inner, 8, "of Completion", align="C", new_x=XPos.LEFT, new_y=YPos.NEXT)
         self.ln(12)
+        self.set_x(self.MARGIN + 15)            # ln() resets x to the page margin
         self.font("Body", 11)
         self.color("text", self.t.ink)
         self.multi_cell(inner, 6, "This certificate is proudly presented to", align="C",
@@ -603,9 +604,10 @@ class ProductPDF(FPDF):
         yy = self.get_y()
         self.line(self.MARGIN + 30, yy, self.MARGIN + self.epw - 30, yy)
         self.ln(10)
-        self.font("Body", 11.5, "I")
+        self.set_x(self.MARGIN + 15)
+        self.font("Body", 12.5, "I")
         self.color("text", self.t.ink)
-        self.multi_cell(inner, 6.4, self.text_safe(b.text), align="C",
+        self.multi_cell(inner, 7, self.text_safe(b.text), align="C",
                         new_x=XPos.LEFT, new_y=YPos.NEXT)
         yy = y + h - 34
         half = (self.epw - 50) / 2

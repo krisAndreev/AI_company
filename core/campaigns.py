@@ -21,7 +21,7 @@ import zipfile
 from datetime import timedelta
 from typing import Annotated, ClassVar, Literal
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, ValidationError, field_validator, model_validator
 
 from core.design import ThemeName
 from core.imagegen import ImageParams, create_images
@@ -141,6 +141,16 @@ class BlogPost(StrictModel):
     body: str = Field(min_length=600, max_length=9000, description="markdown with ## headings")
 
 
+class WrittenCampaign(CampaignBrief):
+    """Call-time params for runs started by the owner or the orchestrator: finished strategy,
+    posts, emails or blog replace the local model's writing. Workers only see CampaignBrief.
+    Written posts are still checked against each channel's limits."""
+    strategy: CampaignStrategy | None = None
+    written_posts: dict[str, list[PostDraft]] = Field(default_factory=dict)
+    emails: EmailSequence | None = None
+    blog: BlogPost | None = None
+
+
 class CampaignSettings(StrictModel):
     start_offset_days: int = Field(default=1, ge=0, le=30)
     max_ai_photos: int = Field(default=6, ge=0, le=30)
@@ -148,7 +158,8 @@ class CampaignSettings(StrictModel):
 
 class CampaignTool(Tool):
     name = "campaign_builder"
-    Params = CampaignBrief
+    Params = CampaignBrief           # what a model may propose
+    CallParams = WrittenCampaign     # what a direct call may also pass (finished writing)
     Settings = CampaignSettings
     needs_model = True
 
@@ -174,7 +185,7 @@ class CampaignTool(Tool):
                 days=brief.duration_days)
         warnings: list[str] = []
 
-        strategy = ctx.generate(
+        strategy = getattr(brief, "strategy", None) or ctx.generate(
             f"{head}\nDefine the campaign strategy: one clear angle, 2-4 content pillars, "
             f"3-8 scroll-stopping hooks, and 2-5 KPIs to track.", CampaignStrategy,
             system="You are a pragmatic organic-marketing strategist for small online shops. "
@@ -185,8 +196,10 @@ class CampaignTool(Tool):
         posts: list[dict] = []
         for ch in [x for x in brief.channels if x in SOCIAL]:
             rules = CHANNEL_RULES[ch]
+            written = getattr(brief, "written_posts", {}).get(ch)
             try:
-                plan = ctx.generate(
+                plan = plan_schema(ch).model_validate(
+                    {"posts": [w.model_dump() for w in written]}) if written else ctx.generate(
                     f"{head}{strat_text}\nWrite exactly {brief.posts_per_channel} {ch} posts spread "
                     f"over days 1-{brief.duration_days}. Limits: caption + hashtags at most "
                     f"{rules['max_chars']} characters, at most {rules['max_hashtags']} hashtags"
@@ -196,14 +209,16 @@ class CampaignTool(Tool):
                       "(text card) or video. Write in the native style of the platform.",
                     plan_schema(ch), system="You write native, honest social media content.",
                     temperature=0.6)
+            except ValidationError as e:
+                raise ToolError(f"written {ch} posts break the channel rules: {e}") from e
             except StructuredOutputError:
                 warnings.append(f"{ch}: posts could not be generated")
                 continue
             for p in plan.posts[: brief.posts_per_channel]:
                 posts.append({"channel": ch, "draft": p, "day": min(p.day, brief.duration_days)})
 
-        emails, blog = None, None
-        if "email" in brief.channels:
+        emails, blog = getattr(brief, "emails", None), getattr(brief, "blog", None)
+        if "email" in brief.channels and emails is None:
             try:
                 emails = ctx.generate(
                     f"{head}{strat_text}\nWrite a {min(4, max(2, brief.duration_days // 4))}-email "
@@ -213,7 +228,7 @@ class CampaignTool(Tool):
                     system="You write helpful, non-spammy marketing emails.", temperature=0.5)
             except StructuredOutputError:
                 warnings.append("email sequence could not be generated")
-        if "blog" in brief.channels:
+        if "blog" in brief.channels and blog is None:
             try:
                 blog = ctx.generate(
                     f"{head}{strat_text}\nWrite an SEO blog article (600-1200 words, markdown with "

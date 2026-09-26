@@ -171,6 +171,29 @@ def t_campaign():
             f"blog, {len(names)}-file pack; calendar starts {start}; nothing published")
 
 
+def t_campaign_written():
+    fake = SchemaFake(dict(PRODUCT))
+    c = Company(":memory:", {"ollama": fake}, None, workspace_dir=TMP / "written")
+    no_ai(c)
+    p = c.orchestrator.create_project("Meal planner", "Sell meal planners", 10)
+    c.run_tool("product_builder", BRIEF, p.id)
+    before = len(fake.calls)
+    brief = {**CAMPAIGN_BRIEF, "channels": ["pinterest", "email"], "videos": 0,
+             "strategy": CAMPAIGN["CampaignStrategy"], "emails": CAMPAIGN["EmailSequence"],
+             "written_posts": {"pinterest": [post(2, "Printable meal planner", "Free up evenings",
+                                                 title="Weekly Meal Planner Printable")]}}
+    out = c.run_tool("campaign_builder", brief, p.id)
+    assert len(fake.calls) == before and out["summary"]["posts"] == 1, fake.calls[before:]
+    bad = {**brief, "written_posts": {"pinterest": [post(2, "No title", "Free up evenings")]}}
+    from core.net import ToolError
+    try:
+        c.run_tool("campaign_builder", bad, p.id)
+        raise AssertionError("pin without a title was accepted")
+    except ToolError as e:
+        assert "channel rules" in str(e)
+    return "finished strategy/posts/emails used without model calls; pin without title refused"
+
+
 def t_campaign_in_loop():
     handlers = {**PRODUCT, **{k: (list(v) if isinstance(v, list) else v) for k, v in CAMPAIGN.items()},
                 "ProjectPlan": {"tasks": [
@@ -199,6 +222,7 @@ def t_campaign_in_loop():
 
 check("campaign pack with channel limits", t_campaign)
 check("product + campaign through the work loop", t_campaign_in_loop)
+check("campaign with finished writing (no model)", t_campaign_written)
 
 # --- Part B -----------------------------------------------------------------------------------------
 
