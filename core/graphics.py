@@ -254,7 +254,8 @@ def social_graphic(t: Theme, size: tuple[int, int], layout: str, headline: str,
                           blur=max(10, unit // 60), offset=(0, unit // 80))
         draw = ImageDraw.Draw(canvas)
         draw.rectangle((0, h - band_h, w, h), fill=rgb(t.accent))
-        text_box = (pad, h - band_h + pad // 2, w - pad, h - pad // 2 - (int(unit * 0.09) if cta else 0))
+        # script headings draw below their line box: keep clear space above the CTA pill
+        text_box = (pad, h - band_h + pad // 2, w - pad, h - pad // 2 - (int(unit * 0.13) if cta else 0))
         _headline_block(canvas, t, text_box, headline, subline, "#FFFFFF", unit)
         if cta:
             _cta_pill(canvas, t, cta, (w // 2, h - pad // 2 - int(unit * 0.045)), unit, light=True)

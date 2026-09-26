@@ -282,7 +282,7 @@ class CampaignTool(Tool):
                 c, ctx.project_id, ctx.task_id, ImageParams(
                     purpose=f"{ch} post day {post['day']}", format=rules["format"], layout=layout,
                     headline=d.hook, subline=brief.offer[:160], cta=rules["cta"],
-                    photo_prompt=prompt, theme=brief.theme), engine, campaign_id,
+                    photo_prompt=prompt, theme=brief.theme, visual=n - 1), engine, campaign_id,
                 f"campaigns/{slugify(brief.name, 30)}-{campaign_id[-6:]}/images",
                 file_stem=f"{post['date']}-{ch}", extra_meta={"channel": ch, "date": post["date"]})
             if prompt:

@@ -319,8 +319,12 @@ def create_images(company, project_id, task_id, params: "ImageParams", engine: I
     t = theme(params.theme)
     size = FORMATS[params.format]
     brand = brand_name(company)
-    visuals = product_visuals(company, project_id)
-    product = visuals[0][1] if visuals else None
+    visuals = product_visuals(company, project_id, limit=16)
+    if visuals:      # cover first, then the marketing mockups, then the other pages
+        order = visuals[:1] + [v for v in visuals if v[0]["kind"] == "mockup"] +             [v for v in visuals[1:] if v[0]["kind"] != "mockup"]
+        product = order[params.visual % len(order)][1]
+    else:
+        product = None
     folder = company.workspace.dir_for(project_id, *folder_name.split("/"))
     assets, notes, cost, providers = [], [], 0.0, set()
     for i in range(params.variants):
@@ -366,6 +370,8 @@ class ImageParams(StrictModel):
                               description="describe a photo WITHOUT any text in it (optional)")
     theme: ThemeName = "modern"
     variants: int = Field(default=1, ge=1, le=3)
+    visual: int = Field(default=0, ge=0, le=30, description="which product picture: 0 = cover, "
+                                                           "1+ = mockups, then pages")
 
 
 class ImageTool(Tool):
