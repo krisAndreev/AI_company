@@ -1,0 +1,6 @@
+{
+  "auto_approve_max_eur": 0.10,
+  "project_approve_max_eur": 1.00,
+  "known_permissions": ["cloud_models", "publishing", "paid_ads"],
+  "default_project_permissions": []
+}

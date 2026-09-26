@@ -1,0 +1,13 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dashboard-demo",
+      "runtimeExecutable": "C:\\Users\\krist\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "runtimeArgs": ["run_dashboard.py", "--host", "127.0.0.1", "--port", "8765",
+                      "--db", "data/demo.db", "--workspace", "data/demo_workspace",
+                      "--local-preview-no-auth"],
+      "port": 8765
+    }
+  ]
+}

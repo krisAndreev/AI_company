@@ -1,0 +1,20 @@
+{
+  "nodes": {
+    "main-pc": {
+      "enabled": true,
+      "description": "Main PC - GTX 1650 Super, 10th-gen i5",
+      "ollama_url": "http://127.0.0.1:11434",
+      "local": true,
+      "vram_gb": 4,
+      "max_concurrent_gpu_tasks": 1
+    },
+    "laptop": {
+      "enabled": false,
+      "description": "CPU-only laptop (dashboard / control). Enable if it runs Ollama and set its LAN address.",
+      "ollama_url": "http://192.168.1.50:11434",
+      "local": false,
+      "vram_gb": 0,
+      "max_concurrent_gpu_tasks": 1
+    }
+  }
+}

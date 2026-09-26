@@ -1,0 +1,51 @@
+{
+  "models": {
+    "local_fast": {
+      "provider": "ollama",
+      "model": "gemma3:4b",
+      "capabilities": ["chat", "structured_output"],
+      "quality": 3,
+      "typical_latency_seconds": 5,
+      "cost_per_1k_input_tokens": 0,
+      "cost_per_1k_output_tokens": 0,
+      "local": true,
+      "uses_gpu": true,
+      "enabled": true
+    },
+    "local_reasoning": {
+      "provider": "ollama",
+      "model": "qwen3:4b",
+      "capabilities": ["chat", "structured_output", "reasoning"],
+      "quality": 4,
+      "typical_latency_seconds": 25,
+      "cost_per_1k_input_tokens": 0,
+      "cost_per_1k_output_tokens": 0,
+      "local": true,
+      "uses_gpu": true,
+      "enabled": true,
+      "think": false
+    },
+    "cloud_example": {
+      "provider": "openai",
+      "model": "REPLACE_WITH_REAL_MODEL_NAME",
+      "capabilities": ["chat", "structured_output", "reasoning"],
+      "quality": 5,
+      "typical_latency_seconds": 5,
+      "cost_per_1k_input_tokens": 0.002,
+      "cost_per_1k_output_tokens": 0.008,
+      "local": false,
+      "uses_gpu": false,
+      "enabled": false
+    }
+  },
+  "task_profiles": {
+    "default":        {"required_capabilities": ["chat"], "prefer": "fast"},
+    "classification": {"required_capabilities": ["structured_output"], "prefer": "fast"},
+    "extraction":     {"required_capabilities": ["structured_output"], "prefer": "fast"},
+    "writing":        {"required_capabilities": ["chat"], "prefer": "fast"},
+    "analysis":       {"required_capabilities": ["structured_output", "reasoning"], "prefer": "quality"},
+    "chat":           {"required_capabilities": ["structured_output"], "prefer": "quality"},
+    "decision":       {"required_capabilities": ["structured_output", "reasoning"], "prefer": "quality"},
+    "planning":       {"required_capabilities": ["structured_output", "reasoning"], "prefer": "quality"}
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "departments": {
+    "research": {
+      "description": "Finds and analyses market opportunities, competitors and demand.",
+      "task_type": "analysis",
+      "capabilities": {
+        "market_research":      {"description": "analyse a market or niche from known information", "automated": true},
+        "competitor_analysis":  {"description": "compare competing products", "automated": true},
+        "keyword_research":     {"description": "propose search keywords", "automated": true},
+        "web_research":         {"description": "search the internet, read public pages and report findings with cited sources", "automated": false, "tool": "web_research"},
+        "research_marketplace": {"description": "pull live marketplace data (e.g. Etsy/EverBee)", "automated": false, "tool": "etsy_listings"}
+      }
+    },
+    "marketing": {
+      "description": "Positions products and brings customers, without paid ads unless permitted.",
+      "task_type": "writing",
+      "capabilities": {
+        "write_marketing_copy": {"description": "write listings, posts, emails", "automated": true},
+        "plan_campaign":        {"description": "plan an organic marketing campaign (text only)", "automated": true},
+        "create_campaign":      {"description": "build a ready-to-post campaign pack: dated posts per channel with images and videos, email sequence, blog article", "automated": false, "tool": "campaign_builder"},
+        "publish_social_post":  {"description": "publish a post publicly", "automated": false, "requires_permission": "publishing"},
+        "run_paid_ads":         {"description": "run paid advertising", "automated": false, "requires_permission": "paid_ads"}
+      }
+    },
+    "development": {
+      "description": "Designs and writes software (as text; never executes it).",
+      "task_type": "analysis",
+      "capabilities": {
+        "write_code":      {"description": "write code or technical specs as text", "automated": true},
+        "deploy_software": {"description": "deploy software", "automated": false, "requires_permission": "publishing"}
+      }
+    },
+    "content": {
+      "description": "Creates written products and content.",
+      "task_type": "writing",
+      "capabilities": {
+        "write_text":             {"description": "write articles, ebooks, product content", "automated": true},
+        "outline_content":        {"description": "outline a content piece or product", "automated": true},
+        "create_digital_product": {"description": "build a finished digital product (printable planner, worksheet, tracker, journal, workbook or ebook): print-ready PDFs, previews, mockups, listing and download bundle", "automated": false, "tool": "product_builder"},
+        "publish_content":        {"description": "publish content or list a product", "automated": false, "requires_permission": "publishing"}
+      }
+    },
+    "design": {
+      "description": "Plans visual design, produces marketing images and videos.",
+      "task_type": "writing",
+      "capabilities": {
+        "design_brief":    {"description": "write a design brief or layout spec", "automated": true},
+        "create_graphics": {"description": "produce marketing images: branded graphics, product images, AI photos", "automated": false, "tool": "image_studio"},
+        "create_video":    {"description": "produce a short marketing video (Reels/TikTok/Shorts) with captions and voiceover", "automated": false, "tool": "video_studio"}
+      }
+    },
+    "data_analysis": {
+      "description": "Analyses metrics and results.",
+      "task_type": "analysis",
+      "capabilities": {
+        "analyze_data": {"description": "analyse provided metrics", "automated": true}
+      }
+    },
+    "finance": {
+      "description": "Tracks costs, pricing and revenue.",
+      "task_type": "analysis",
+      "capabilities": {
+        "budget_analysis": {"description": "analyse costs, pricing and margins", "automated": true},
+        "make_purchase":   {"description": "spend real money", "automated": false}
+      }
+    },
+    "automation": {
+      "description": "Designs repeatable workflows.",
+      "task_type": "analysis",
+      "capabilities": {
+        "design_workflow": {"description": "describe an automated workflow", "automated": true}
+      }
+    }
+  }
+}

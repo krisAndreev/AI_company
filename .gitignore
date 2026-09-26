@@ -1,0 +1,22 @@
+# Runtime data: database, password hash, backups, demo data
+data/
+logs/
+workspace/
+
+# Local engines and models (installed by setup_assets.py, hash-pinned)
+assets/fonts/
+tools/runtime/
+tools/sdcpp/
+models/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secrets and local machine files
+.env
+*.key
+*.pem
+.claude/settings.local.json

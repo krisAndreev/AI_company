@@ -1,0 +1,16 @@
+{
+  "total_budget_eur": 50,
+  "max_active_projects": 3,
+  "min_decision_confidence": 0.6,
+  "max_tasks_per_plan": 5,
+  "max_task_retries": 2,
+  "brand_name": "",
+  "autopilot": true,
+  "autopilot_max_project_budget_eur": 25,
+  "max_stages_per_project": 6,
+  "autopilot_interval_seconds": 20,
+  "keep_awake_while_working": true,
+  "keep_awake_grace_minutes": 3,
+  "workspace_dir": "workspace",
+  "backup_keep": 14
+}
