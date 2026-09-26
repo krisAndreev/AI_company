@@ -13,7 +13,8 @@ Goal (2026-09-26, owner asked for the whole run in one message): tennis digital 
   [x] 4 built for real: prod_fe6023bde4d2 (18 pages), listing EUR 6.99 in listing.md
   [x] 5 7 listing images `mockups/listing-01..07-*.jpg` (hero = big court diagram, close-ups) +
       PUBLISH-CHECKLIST.md (asset_ce923f06c022)
-  [ ] 6 owner reads PDF (listing says 'every page was reviewed'), then Etsy publish (owner OK)
+  [x] 6a owner read the PDF (2026-09-26)
+  [ ] 6b Etsy form filled in owner's Chrome (not saved) - waiting for owner's Publish OK
 - DP1: measure ~2026-10-03.
 
 ## Now: projects
@@ -32,7 +33,8 @@ Goal (2026-09-26, owner asked for the whole run in one message): tennis digital 
 
 ## Now: waiting for the owner
 <!-- reviews, decisions, accounts, money, publishing -->
-- DP2: read the PDF (all 18 pages), then publish on Etsy per `PUBLISH-CHECKLIST.md` (owner OK).
+- DP2: Etsy form filled (title shortened to 84 chars, category Racquet Sports/Tennis, AI generator,
+  hero `listing-01-hero-square.jpg`) - owner's yes to Publish.
 - Reject old v1 drafts (Family Digital Detox Planner product + its campaign + 6 old images) and
   approve the v2 kit drafts in the dashboard (only the owner can decide assets).
 - ~2026-10-03: Etsy Stats (visits from Pinterest, favourites, sales) -> decide next steps.
@@ -89,6 +91,9 @@ Goal (2026-09-26, owner asked for the whole run in one message): tennis digital 
   the schedule (date typed MM/DD/YYYY, then click the day; time via dropdown menuitem),
   topic suggestions are useless (skip), extension promo popup after publish (Esc).
   Scheduled pins: profile > Created > "Scheduled Pins" (only visible to the owner).
+- Etsy thumbnails are square crops of photo 1: keep the hero's key content in the centre square
+  (DP2 hero v1 lost its title). Tags: type slowly (wait ~0.5 s before/after Enter) or letters get lost.
+  Etsy asks 'How is this digital content created?' -> 'With an AI generator' when text is AI-drafted.
 - Etsy form (2026): title 140 chars, 13 tags <= 20 chars, type Digital files (upload PDFs,
   not the zip), renewal Manual; strip tracking params from listing URLs before sharing.
 
