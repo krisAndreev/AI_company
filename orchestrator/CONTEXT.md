@@ -6,18 +6,13 @@ Mode: planning   <!-- autonomous | planning (see ROLE.md 1b) -->
 
 ## Now: plan
 <!-- planning mode: goal, then numbered tasks with [x] done / [ ] open / (skipped) -->
-Goal (2026-09-26, owner asked for the whole run in one message): tennis digital product 2.
-  [x] 1 research: 3 pockets scored /25 -> winner rec doubles positioning (22/25), memo asset_c41dc6b31ef2
-  [x] 2 renderer: `court` diagram block + contents-page fix (test_phase16/18 --offline pass)
-  [x] 3 product written by Claude, trial-rendered, reviewed every page (A4+Letter), 3 rounds of fixes
-  [x] 4 built for real: prod_fe6023bde4d2 (18 pages), listing EUR 6.99 in listing.md
-  [x] 5 7 listing images `mockups/listing-01..07-*.jpg` (hero = big court diagram, close-ups) +
-      PUBLISH-CHECKLIST.md (asset_ce923f06c022)
-  [x] 6a owner read the PDF (2026-09-26)
-  [x] 6b owner published on Etsy 2026-09-26: https://www.etsy.com/listing/4583127470
-  [ ] 7 Pinterest: 4 pins drafted in owner's Chrome (`campaigns/doubles-playbook-pinterest/v1_2026-09-26/`,
-      PINS.md); pin 1 now, 2-4 on Sep 29 / Oct 3 / Oct 7 20:00; new board 'Tennis Doubles Tips' - owner OK
-- DP1: measure ~2026-10-03.
+Goal (2026-09-26): tennis digital product 2 - DONE (researched, built, live, marketed).
+  [x] 1-5 research (3 pockets /25), court-diagram renderer, product, 7 listing images, checklist
+  [x] 6 owner read the PDF and published on Etsy: https://www.etsy.com/listing/4583127470
+  [x] 7 Pinterest board 'Tennis Doubles Tips': pin 1 live, pin 4 scheduled Oct 7 20:00 (Claude);
+      pins 2 (Sep 29) + 3 (Oct 3) finished by the owner (owner said "all done") - verify in
+      profile > Created > Scheduled Pins at the next session.
+- No active plan. Next: measure DP1 ~2026-10-03 and DP2 ~2026-10-10 (Etsy Stats).
 
 ## Now: projects
 <!-- one line each: id | name | status | stage | next step | waiting for -->
@@ -31,11 +26,13 @@ Goal (2026-09-26, owner asked for the whole run in one message): tennis digital 
 - proj_c002d70421e8 | Digital Product 2 - Tennis = 'Tennis Doubles Playbook' | PAUSED (Claude runs it) | LIVE on Etsy https://www.etsy.com/listing/4583127470 (EUR 6.99) |
   v1 built prod_fe6023bde4d2, files `workspace/projects/2026-09-26_digital-product-2-tennis_c002d70421e8/
   products/tennis-doubles-playbook/v1_2026-09-26/` (A4+Letter PDFs, zip, listing.md, 3 mockups);
-  research `notes/2026-09-26_research-3-pockets.md`; 7 listing images + checklist | publish | owner: read PDF
+  research `notes/2026-09-26_research-3-pockets.md`; 7 listing images + checklist; pins in
+  `campaigns/doubles-playbook-pinterest/v1_2026-09-26/` (PINS.md) | measure ~2026-10-10 | owner: Etsy Stats
 
 ## Now: waiting for the owner
 <!-- reviews, decisions, accounts, money, publishing -->
-- DP2: yes for board 'Tennis Doubles Tips' + pin 1 publish + pins 2-4 schedule. ~2026-10-10: Etsy Stats.
+- ~2026-10-10: DP2 Etsy Stats (visits from Pinterest, favourites, sales). Reject old DP2 hero
+  `listing-01-hero.jpg` (replaced by `listing-01-hero-square.jpg`) in the dashboard.
 - Reject old v1 drafts (Family Digital Detox Planner product + its campaign + 6 old images) and
   approve the v2 kit drafts in the dashboard (only the owner can decide assets).
 - ~2026-10-03: Etsy Stats (visits from Pinterest, favourites, sales) -> decide next steps.
@@ -74,6 +71,9 @@ Goal (2026-09-26, owner asked for the whole run in one message): tennis digital 
 - Research reading: Reddit is blocked for WebFetch AND the Chrome extension; Bing shows a bot check
   (never bypass). Working sources: Etsy + Amazon search pages in Chrome (JS extract of titles/prices/
   rating counts), Talk Tennis threads via WebFetch (`https://tt.tennis-warehouse.com/index.php?threads/<slug>.<id>/`).
+- Pinterest pins built from the product's own renderer (headline + matched court diagram + 3 real
+  tips + product footer) beat campaign_builder's rotated visuals: no image/headline mismatch.
+- Etsy categories: digital sports guides fit 'Racquet Sports' (physical or digital) + Sport type.
 - Etsy supply is not demand: the only adult wall-practice listing had 0 sales; Amazon rating counts
   (e.g. rec doubles books 276/295 ratings) are better proof of "already paid to solve".
 - Etsy printables (family niche) sell as KITS: challenge days, family contract, reward
@@ -111,6 +111,17 @@ Goal (2026-09-26, owner asked for the whole run in one message): tennis digital 
   or explicit flags for script options.
 - Spent ~25 min on a local-model product build that crashed -> for sellable text, write it
   directly (owner decision) and keep the 4B models for background jobs.
+- DP2 listing said "diagrams on every card" and the hero said "15 cards with diagrams" (only 9
+  pages have diagrams) -> check every number/claim in listings and images against the file.
+- DP2 hero was designed 4:3 only; Etsy's square thumbnail cut the title -> keep hero key content
+  in the centre square (x 300-2100 of 2400).
+- Typed 13 Etsy tags without pauses -> 9 came out garbled -> wait ~0.5 s around each Enter and
+  verify the tag list (aria-label 'Delete tag ...') before moving on.
+- Clicked by screenshot coordinates after the page layout shifted (item type stayed Physical,
+  quantity stayed empty) -> use element refs (find) for form fields, re-check values after.
+- Pressed Escape after Pinterest 'Schedule' -> it closed the confirm dialog, so nothing was
+  scheduled -> after Schedule, look for the confirm dialog and click its Schedule button.
+- Bulk JS clicks on re-rendering lists (tag delete) only removed one -> click one per step, re-query.
 - First handover had an unfixed image/headline mismatch (mentioned, not fixed) -> fix
   cheap quality issues before handing over instead of listing them as caveats.
 
@@ -132,6 +143,8 @@ Goal (2026-09-26, owner asked for the whole run in one message): tennis digital 
   ROLE.md section 4 "Files and folders". Tests 16-19 --offline pass.
 
 ## Log (last ~2 weeks; older -> HISTORY.md)
+- 2026-09-26: DP2 LIVE on Etsy (EUR 6.99, title shortened to 84 chars, AI generator disclosed);
+  Pinterest board 'Tennis Doubles Tips' with 4 pins (1 live, 3 scheduled Sep 29/Oct 3/Oct 7).
 - 2026-09-26: DP2 tennis: research (doubles 22/25, nerves 19, solo/wall 18), Tennis Doubles Playbook
   v1 built (15 content pages, court diagrams), reviewed + fixed (TOC over cover, small diagrams,
   empty half pages, lobs page overflow). 7 listing images + publish checklist made and reviewed.
