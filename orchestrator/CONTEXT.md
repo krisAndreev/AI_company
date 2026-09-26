@@ -6,20 +6,21 @@ Mode: planning   <!-- autonomous | planning (see ROLE.md 1b) -->
 
 ## Now: plan
 <!-- planning mode: goal, then numbered tasks with [x] done / [ ] open / (skipped) -->
-Goal (2026-09-26): take Digital Product 1 (Family Digital Detox Planner) to a live listing.
-Owner approved steps 1-7 on 2026-09-26 (do all; owner publishes step 8 themself). Shop name: KrokiCrafts.
-  [x] 1 review all 26 pages  [x] 2 competitor memo (research asset_50a23962a040)  [ ] 3 v2 brief + rebuild
-  [ ] 4 new mockups/listing images  [ ] 5 listing text  [ ] 6 campaign pack update
-  [ ] 7 final QA + handover checklist
-  Owner OK'd tool changes + v2 (2026-09-26). Tool changes done + committed; v2 build next.  (5b shop About/policies/banner: proposed, not approved) Platform = Etsy; owner created the shop 2026-09-26 (setup in progress, owner-only).
+Goal (2026-09-26): take Digital Product 1 to a live Etsy listing (shop KrokiCrafts).
+  [x] 1 review  [x] 2 competitor memo  [x] 3 v2 built (Claude-written, prod_19ed8c70f03e)
+  [x] 4 listing images (5 new + cover/tablet mockups)  [x] 5 listing text (in listing.md, EUR 4.99)
+  [x] 6 campaign camp_b75217d9f6fb (12 posts pin/ig/fb, Claude-written)  [x] 7 checklist asset_bca50267857e
+  [ ] 8 OWNER publishes on Etsy (5b shop About/policies/banner: offered, not approved)
 
 ## Now: projects
 <!-- one line each: id | name | status | stage | next step | waiting for -->
-- proj_5846365e8996 | Digital Product 1 (Family Digital Detox Planner) | PAUSED | stage 2 | fix product + listing, then owner publishes | owner: platform, account, approvals
+- proj_5846365e8996 | Digital Product 1 -> v2 '7-Day Family Screen Reset Kit' | PAUSED | stage 2 | owner reviews + publishes | owner
 
 ## Now: waiting for the owner
 <!-- reviews, decisions, accounts, money, publishing -->
-- (none)
+- 2026-09-26: review v2 drafts (7-Day kit) + reject v1 drafts (Family Digital Detox Planner +
+  its campaign, 6 old campaign images); read PDF, then publish on Etsy via PUBLISH-CHECKLIST.md;
+  send listing URL. Campaign dates are suggestions (shift to go-live).
 
 ## Now: blocked / capability gaps
 <!-- what cannot be done well yet, evidence, proposed fix, owner decision if any -->
@@ -55,6 +56,8 @@ Owner approved steps 1-7 on 2026-09-26 (do all; owner publishes step 8 themself)
   commit/push rule.
 
 ## Log (last ~2 weeks; older -> HISTORY.md)
+- 2026-09-26: DP1 v2 built from Claude-written pages (16p) + 5 listing images + campaign; campaign
+  tool got written-content option; social images: CTA overlap fixed, visuals rotate. Tests 16/17/18 pass.
 - 2026-09-26: product_builder: one-page fit (fit_blocks), tidy_blocks, markdown/URL stripping,
   cards + certificate blocks, optional fixed page_plan, tag quote cleanup; grid mockup centres
   short row; brand_name=KrokiCrafts; max_content_pages 12->14. test_phase16/17/18 --offline pass.
