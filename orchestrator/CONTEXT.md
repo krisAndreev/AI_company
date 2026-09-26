@@ -11,7 +11,9 @@ Goal (2026-09-26): take Digital Product 1 to a live Etsy listing (shop KrokiCraf
   [x] 4 listing images (5 new + cover/tablet mockups)  [x] 5 listing text (in listing.md, EUR 4.99)
   [x] 6 campaign camp_b75217d9f6fb (12 posts pin/ig/fb, Claude-written)  [x] 7 checklist asset_bca50267857e
   [x] 8 OWNER published on Etsy 2026-09-26: https://www.etsy.com/listing/4583030705/7-day-family-screen-time-reset-kit
-  [ ] 9 run campaign camp_b75217d9f6fb - waiting: owner's social accounts + posting method (5b shop About/policies/banner: offered, not approved)
+  [ ] 9 campaign camp_b75217d9f6fb: Pinterest only (owner account KrokiCrafts, board 'Screen Time
+      Ideas for Families'). Pin 1 published 2026-09-26 (owner OK). Pins 2-4 proposed scheduled
+      Oct 1/5/9 via 'Publish at a later date', each owner-confirmed. IG/FB: no accounts yet. (5b shop About/policies/banner: offered, not approved)
 
 ## Now: projects
 <!-- one line each: id | name | status | stage | next step | waiting for -->
@@ -19,7 +21,7 @@ Goal (2026-09-26): take Digital Product 1 to a live Etsy listing (shop KrokiCraf
 
 ## Now: waiting for the owner
 <!-- reviews, decisions, accounts, money, publishing -->
-- 2026-09-26: campaign: which accounts exist (Pinterest/IG/FB), post manually or via Chrome scheduling?
+- 2026-09-26: OK to schedule pins 2-4 (Oct 1/5/9)?
 - 2026-09-26: review v2 drafts (7-Day kit) + reject v1 drafts (Family Digital Detox Planner +
   its campaign, 6 old campaign images); read PDF, then publish on Etsy via PUBLISH-CHECKLIST.md;
   send listing URL. Campaign dates are suggestions (shift to go-live).
@@ -42,6 +44,8 @@ Goal (2026-09-26): take Digital Product 1 to a live Etsy listing (shop KrokiCraf
 - Fast checks only: `--offline` tests + one targeted live call.
 
 ## Lessons learned
+- 2026-09-26: Pinterest via Chrome: pin-creation-tool, file_upload on the file input; topic
+  suggestions are poor (skip); toggle 'Mark as AI-Modified' on; extension promo popup after publish (Esc).
 <!-- proven only; "when X, do Y, because Z (evidence)" -->
 - 2026-09-26: product_builder v1 flaws (DP1 review): pages overflow -> spill page padded with Notes
   (12 planned -> 24 pages); markdown (*x*, [u](u)) printed raw; model invents URLs; tracker used
