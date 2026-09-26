@@ -385,7 +385,14 @@ def t_product_fit_and_clean():
     p = c.orchestrator.create_project("P", "x", 5)
     out = c.run_tool("product_builder", {**BRIEF, "page_plan": OUTLINE["pages"]}, p.id)
     assert len(crashes) == 2 and any("page 2" in w for w in out["summary"]["warnings"])
-    return "markdown/URLs stripped; overflowing page fits 1 page (A4+Letter); cards, certificate; "            "title-heading + month removed; quote tag cleaned; fixed page plan skips outline; "            "model crash -> 1 retry, then safe page"
+    c, fake = company({"ProductListing": LISTING}, "written")
+    p = c.orchestrator.create_project("P", "x", 5)
+    out = c.run_tool("product_builder", {**BRIEF, "listing": LISTING, "written_pages": [
+        {"title": "Checklist", "blocks": [{"type": "checklist", "items": ["Book venue", "Budget"]}]},
+        {"title": "Cards", "blocks": [{"type": "cards", "items": ["Picnic: eat outside."] * 4}]}]},
+        p.id)
+    assert fake.calls == [] and out["summary"]["pages"] == 4
+    return "markdown/URLs stripped; overflowing page fits 1 page (A4+Letter); cards, certificate; "            "title-heading + month removed; quote tag cleaned; fixed page plan skips outline; "            "model crash -> 1 retry, then safe page; "            "finished pages + listing need no model"
 
 
 check("product builder: PDFs, previews, mockups, listing, bundle", t_product_build)

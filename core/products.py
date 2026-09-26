@@ -115,6 +115,18 @@ class ProductListing(StrictModel):
         return seen
 
 
+class WrittenPage(StrictModel):
+    title: str = Field(min_length=2, max_length=60)
+    blocks: list[Block] = Field(min_length=1, max_length=10)
+
+
+class WrittenProduct(ProductBrief):
+    """Call-time params for runs started by the owner or the orchestrator: finished pages and/or
+    a finished listing replace the local model's writing. Workers only see ProductBrief."""
+    written_pages: list[WrittenPage] = Field(default_factory=list, max_length=24)
+    listing: ProductListing | None = None
+
+
 # --- PDF rendering ----------------------------------------------------------------------------
 
 _REPLACE = {"→": "->", "←": "<-", "✓": "", "✔": "", "★": "*",
@@ -768,7 +780,8 @@ class ProductSettings(StrictModel):
 class ProductTool(Tool):
     """Builds a complete digital product (PDFs + previews + mockups + listing + bundle)."""
     name = "product_builder"
-    Params = ProductBrief
+    Params = ProductBrief            # what a model may propose
+    CallParams = WrittenProduct      # what a direct call may also pass (finished pages/listing)
     Settings = ProductSettings
     needs_model = True
 
@@ -790,7 +803,11 @@ class ProductTool(Tool):
                 + f"\nType: {brief.product_type}. Audience: {brief.audience}.\n"
                 + (f"Must contain: {brief.content_notes}\n" if brief.content_notes else ""))
 
-        if brief.page_plan:
+        written = getattr(brief, "written_pages", [])[:self.settings.max_content_pages]
+        if written:
+            plans = [PagePlan(title=w.title, purpose="finished page supplied by the caller")
+                     for w in written]
+        elif brief.page_plan:
             plans = brief.page_plan[:self.settings.max_content_pages]
         else:
             outline = ctx.generate(
@@ -804,16 +821,17 @@ class ProductTool(Tool):
         pages: list[tuple[str, list[Block]]] = []
         for i, plan in enumerate(plans, start=1):
             prompt = (
-                    f"{head}\nPage {i} of {len(plans)}: \"{plan.title}\" - {plan.purpose}\n"
-                    f"Pages in this product: {', '.join(p.title for p in plans)}\n\n"
-                    f"{_BLOCK_GUIDE}\n{_page_guidance(brief.product_type)}\n"
-                    "Write real, specific content: no placeholders such as 'Lorem ipsum' or "
-                    "'[insert]'. Do not repeat the page title as a heading. Plain text only: no "
-                    "markdown, no web addresses, no brand, app or organisation names. Everything "
-                    "must fit on ONE printed page.")
-            blocks = None
-            for attempt, temp in enumerate((0.5, 0.8)):   # a model crash (e.g. a repeat loop)
-                try:                                     # gets one retry, then a safe page
+                f"{head}\nPage {i} of {len(plans)}: \"{plan.title}\" - {plan.purpose}\n"
+                f"Pages in this product: {', '.join(p.title for p in plans)}\n\n"
+                f"{_BLOCK_GUIDE}\n{_page_guidance(brief.product_type)}\n"
+                "Write real, specific content: no placeholders such as 'Lorem ipsum' or "
+                "'[insert]'. Do not repeat the page title as a heading. Plain text only: no "
+                "markdown, no web addresses, no brand, app or organisation names. Everything "
+                "must fit on ONE printed page.")
+            blocks = list(written[i - 1].blocks) if written else None
+            # a model crash (e.g. a repeat loop) gets one retry, then a safe notes page
+            for attempt, temp in enumerate(() if written else (0.5, 0.8)):
+                try:
                     blocks = ctx.generate(prompt, PageContent, temperature=temp,
                                           system="You write and design pages for digital "
                                                  "products.").blocks
@@ -861,7 +879,9 @@ class ProductTool(Tool):
                         for k, v in mockups.items()}
 
         listing = None
-        if self.settings.write_listing:
+        if getattr(brief, "listing", None):
+            listing = brief.listing
+        elif self.settings.write_listing:
             listing = self._listing(ctx, brief, plans, page_count, warnings)
         listing_md = folder / "listing.md"
         listing_md.write_text(self._listing_markdown(brief, listing, page_count, len(pdfs)),

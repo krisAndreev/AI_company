@@ -23,7 +23,9 @@ Owner approved steps 1-7 on 2026-09-26 (do all; owner publishes step 8 themself)
 
 ## Now: blocked / capability gaps
 <!-- what cannot be done well yet, evidence, proposed fix, owner decision if any -->
-- (none known yet)
+- qwen3/gemma page writing hit Ollama 'token repeat limit' (2026-09-26) -> retry+fallback added.
+- test_phase19 'refused action' test fails on Windows console (UnicodeEncodeError on the warning
+  sign char); pre-existing, not yet fixed.
 
 ## Owner decisions and preferences
 - 2026-09-26: Claude (this role) is the orchestrator, run from a Claude Code session in the
@@ -31,6 +33,8 @@ Owner approved steps 1-7 on 2026-09-26 (do all; owner publishes step 8 themself)
   steps (publishing, accounts, money, contacting people, installs). Otherwise act
   autonomously: try first, review own work, improve tools, then hand over for review.
 - 2026-09-26: sales platform = Etsy. Owner created the shop and sets up the account/payments/tax themselves.
+- 2026-09-26: owner: Claude may write product content itself (more reliable than the 4B model);
+  pass it as `written_pages` + `listing` to product_builder.
 - Save tokens: local Ollama models do bulk generation; Claude plans and reviews.
 - Fast checks only: `--offline` tests + one targeted live call.
 

@@ -272,7 +272,7 @@ class ToolRegistry:
             return self._refuse(name, raw_params, ctx,
                                 f"daily limit {tool.config.max_calls_per_day} reached")
         try:
-            params = tool.Params.model_validate(raw_params)
+            params = getattr(tool, "CallParams", tool.Params).model_validate(raw_params)
         except ValidationError as e:
             return self._refuse(name, raw_params, ctx, f"invalid params: {e}")
         worst = tool.max_cost(params, ctx)
