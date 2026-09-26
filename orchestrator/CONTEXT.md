@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-26
 
-Mode: planning   <!-- autonomous | planning (see ROLE.md 1b) -->
+Mode: autonomous   <!-- autonomous | planning (see ROLE.md 1b) -->
 
 ## Now: plan
 <!-- planning mode: goal, then numbered tasks with [x] done / [ ] open / (skipped) -->
@@ -12,7 +12,12 @@ Goal (2026-09-26): tennis digital product 2 - DONE (researched, built, live, mar
   [x] 7 Pinterest board 'Tennis Doubles Tips': pin 1 live, pin 4 scheduled Oct 7 20:00 (Claude);
       pins 2 (Sep 29) + 3 (Oct 3) finished by the owner (owner said "all done") - verify in
       profile > Created > Scheduled Pins at the next session.
-- No active plan. Next: measure DP1 ~2026-10-03 and DP2 ~2026-10-10 (Etsy Stats).
+Goal (2026-09-26, owner): find a niche for teaching people to create AI e-books / digital products.
+  [x] 1 project proj_0e1849bb6696 'Digital Product 3 - AI creator guide' (EUR 5, PAUSED = Claude runs it)
+  [x] 2 research: winner 'Family story book with AI' 21/25 (teachers 17, coaches 15; generic
+      AI-ebook/PLR dropped) -> `notes/2026-09-26_research-3-pockets.md` (asset_72d5cd396d12)
+  [ ] 3 owner confirms winner + format; then build kit (Claude writes pages), images, checklist
+- Also due: measure DP1 ~2026-10-03 and DP2 ~2026-10-10 (Etsy Stats).
 
 ## Now: projects
 <!-- one line each: id | name | status | stage | next step | waiting for -->
@@ -31,6 +36,7 @@ Goal (2026-09-26): tennis digital product 2 - DONE (researched, built, live, mar
 
 ## Now: waiting for the owner
 <!-- reviews, decisions, accounts, money, publishing -->
+- DP3: confirm niche 'Family story book with AI' (interview kit + AI prompts + book template).
 - ~2026-10-10: DP2 Etsy Stats (visits from Pinterest, favourites, sales). Reject old DP2 hero
   `listing-01-hero.jpg` (replaced by `listing-01-hero-square.jpg`) in the dashboard.
 - Reject old v1 drafts (Family Digital Detox Planner product + its campaign + 6 old images) and
@@ -68,6 +74,7 @@ Goal (2026-09-26): tennis digital product 2 - DONE (researched, built, live, mar
 
 ## Lessons learned
 <!-- proven only; "when X, do Y, because Z (evidence)" -->
+- Etsy search cards no longer show review counts; in-page fetch('/search?q=') + DOMParser gives cards/prices/Bestseller badges fast; Amazon fetch('/s?k=..&i=stripbooks') gives rating counts; review text is not in fetched HTML.
 - Research reading: Reddit is blocked for WebFetch AND the Chrome extension; Bing shows a bot check
   (never bypass). Working sources: Etsy + Amazon search pages in Chrome (JS extract of titles/prices/
   rating counts), Talk Tennis threads via WebFetch (`https://tt.tennis-warehouse.com/index.php?threads/<slug>.<id>/`).
@@ -147,6 +154,7 @@ Goal (2026-09-26): tennis digital product 2 - DONE (researched, built, live, mar
   ROLE.md section 4 "Files and folders". Tests 16-19 --offline pass.
 
 ## Log (last ~2 weeks; older -> HISTORY.md)
+- 2026-09-26: owner switched to autonomous mode; DP3 project + niche research (family story book with AI 21/25).
 - 2026-09-26: DP2 LIVE on Etsy (EUR 6.99, title shortened to 84 chars, AI generator disclosed);
   Pinterest board 'Tennis Doubles Tips' with 4 pins (1 live, 3 scheduled Sep 29/Oct 3/Oct 7).
 - 2026-09-26: DP2 tennis: research (doubles 22/25, nerves 19, solo/wall 18), Tennis Doubles Playbook
