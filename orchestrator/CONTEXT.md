@@ -10,7 +10,8 @@ Goal (2026-09-26): take Digital Product 1 to a live Etsy listing (shop KrokiCraf
   [x] 1 review  [x] 2 competitor memo  [x] 3 v2 built (Claude-written, prod_19ed8c70f03e)
   [x] 4 listing images (5 new + cover/tablet mockups)  [x] 5 listing text (in listing.md, EUR 4.99)
   [x] 6 campaign camp_b75217d9f6fb (12 posts pin/ig/fb, Claude-written)  [x] 7 checklist asset_bca50267857e
-  [ ] 8 OWNER publishes on Etsy (5b shop About/policies/banner: offered, not approved)
+  [x] 8 OWNER published on Etsy 2026-09-26: https://www.etsy.com/listing/4583030705/7-day-family-screen-time-reset-kit
+  [ ] 9 run campaign camp_b75217d9f6fb - waiting: owner's social accounts + posting method (5b shop About/policies/banner: offered, not approved)
 
 ## Now: projects
 <!-- one line each: id | name | status | stage | next step | waiting for -->
@@ -18,6 +19,7 @@ Goal (2026-09-26): take Digital Product 1 to a live Etsy listing (shop KrokiCraf
 
 ## Now: waiting for the owner
 <!-- reviews, decisions, accounts, money, publishing -->
+- 2026-09-26: campaign: which accounts exist (Pinterest/IG/FB), post manually or via Chrome scheduling?
 - 2026-09-26: review v2 drafts (7-Day kit) + reject v1 drafts (Family Digital Detox Planner +
   its campaign, 6 old campaign images); read PDF, then publish on Etsy via PUBLISH-CHECKLIST.md;
   send listing URL. Campaign dates are suggestions (shift to go-live).
