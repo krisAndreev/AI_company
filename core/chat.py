@@ -25,6 +25,7 @@ import json
 import re
 
 from core.projects import ProjectStatus
+from core.research import RESEARCH_METHOD
 from core.router import RouteRequest
 from core.schemas import OrchestratorReply, ProposedAction, TaskProposal
 from core.structured import generate_structured
@@ -77,6 +78,10 @@ RULES = (
     "actions run immediately: never ask the owner to confirm them.\n"
     "- Check company_budget.unallocated_eur and limits before creating a project; if there "
     "is no room, say so and ask (smaller budget, or pause / finish another project).\n"
+    "- RESEARCH (always, owner rule): when the owner asks for research, a niche, a new "
+    "product idea or market analysis, the research task / project objective must say to use "
+    "this method: " + RESEARCH_METHOD + " Report the 3 pockets and the winner from the "
+    "research results.\n"
     "- Never invent ids, numbers or results. You cannot publish or spend money yourself.\n"
     "- `reply` is what the owner reads: 1-4 short sentences, plain language. Answer the "
     "owner's LAST message; do not repeat your earlier replies.")

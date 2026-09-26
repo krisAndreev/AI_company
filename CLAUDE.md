@@ -58,6 +58,13 @@ the system, and ROLE.md's hard rules (legal, budgets, owner-confirmed steps) bin
 - Local engines (not in git, installed by `setup_assets.py`, hash-pinned): `assets/fonts`,
   `tools/runtime` (app-local signed MSVC DLLs), `tools/sdcpp`, `models/voices`, `models/image`
 
+## Research method (owner rule - always)
+All market / niche / product research uses `core/research.py:RESEARCH_METHOD`: 3 profitable
+pockets (asked repeatedly + already paid to solve), exact buyer, quoted words, current price,
+score /5 on competition, longevity, effort, sells-while-asleep, repeat = total /25, one winner.
+It is injected into the chat rules, research workers and `web_research` (code totals the
+scores and picks the winner). Details: `orchestrator/ROLE.md` 2b.
+
 ## Conventions
 - Simple Python, few dependencies (`requirements.txt`). No frameworks without need.
 - Log every important action via `EventLog.record(actor, action, project_id, task_id, **details)`

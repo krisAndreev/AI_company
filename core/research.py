@@ -12,6 +12,20 @@ from pydantic import BaseModel, ConfigDict, Field
 from core.db import Database
 from core.tasks import utcnow
 
+# Owner rule (2026-09-26): every market / product / niche research follows this method.
+# Injected into the chat rules, research workers and the web_research report; the /25 totals
+# and the winner are computed by code (web.score_pockets), never taken from the model.
+RESEARCH_METHOD = (
+    "When doing the research use this: Find 3 profitable pockets — problems asked repeatedly "
+    "and already paid to solve. Exact buyer, quoted words, current price, score /5 on "
+    "competition, longevity, effort, sells-while-asleep, repeat — total /25. Pick one winner.")
+RESEARCH_SCALE = ("Score each criterion 1-5 where 5 is best for us: competition 5 = little "
+                  "competition, longevity 5 = evergreen, effort 5 = easy to make, "
+                  "sells-while-asleep 5 = fully passive, repeat 5 = repeat buyers / follow-up "
+                  "products.")
+RESEARCH_CAPABILITIES = {"market_research", "competitor_analysis", "keyword_research",
+                         "web_research"}
+
 
 class MarketObservation(BaseModel):
     model_config = ConfigDict(extra="forbid")

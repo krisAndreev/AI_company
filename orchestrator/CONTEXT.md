@@ -63,8 +63,8 @@ Goal (2026-09-26): tennis digital product 2 - DONE (researched, built, live, mar
 - 2026-09-26: marketing on Pinterest first; the owner likes batched confirmations (fill all,
   one OK) and clicked Schedule themselves.
 - Fast checks only: `--offline` tests + one targeted live call.
-- 2026-09-26: product 2 niche = sports/tennis; research format: 3 profitable pockets (buyer, quoted
-  words, current price, score /5 competition/longevity/effort/asleep/repeat = /25), pick one winner.
+- 2026-09-26: ALWAYS research with the 3-profitable-pockets method (/25, one winner) - enforced in
+  code (`core/research.py:RESEARCH_METHOD`) + ROLE.md 2b. Product 2 niche was sports/tennis.
 
 ## Lessons learned
 <!-- proven only; "when X, do Y, because Z (evidence)" -->
@@ -127,6 +127,10 @@ Goal (2026-09-26): tennis digital product 2 - DONE (researched, built, live, mar
 
 ## Changes made to the system
 <!-- YYYY-MM-DD: what changed, why, test that passed -->
+- 2026-09-26: owner's research method forced everywhere: `RESEARCH_METHOD` in chat RULES, research
+  workers (department research or research capabilities; also tool-param prompts) and web_research
+  (`ResearchReport.pockets`, code totals /25 + picks winner, uncited pockets dropped, table in the
+  report). ROLE.md 2b + CLAUDE.md. All offline suites pass (16: +pocket asserts, 19: +rule check).
 - 2026-09-26: product_builder `court` block (tennis diagrams: us/them/ball/shot/move/zone/note,
   1-3 panels, validated by `parse_court`, shrinkable by fit_blocks); fixed guide contents page drawn
   over the cover + blank page 2 (`fresh_page`); tools.json max_content_pages 14 -> 16.

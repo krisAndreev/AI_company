@@ -14,6 +14,7 @@ import uuid
 from core.db import Database
 from core.departments import Department
 from core.projects import Project
+from core.research import RESEARCH_CAPABILITIES, RESEARCH_METHOD, RESEARCH_SCALE
 from core.router import ModelRouter, RouteRequest
 from core.schemas import TaskResult
 from core.structured import StructuredResult, generate_structured
@@ -99,9 +100,12 @@ class Worker:
         ))
         tool_data, cost = self._use_tools(task, route, context)
         used_tools = self.tool_calls > 0
+        method = (f"Research method (owner rule - always use it): {RESEARCH_METHOD}\n"
+                  f"{RESEARCH_SCALE}\n\n" if self._is_research(task) else "")
         prompt = (
             f"YOUR TASK (do only this): {task.description}\n"
-            f"Capabilities you may use: {', '.join(task.required_capabilities) or 'none'}\n\n"
+            + method
+            + f"Capabilities you may use: {', '.join(task.required_capabilities) or 'none'}\n\n"
             + (f"Results of earlier tasks you can build on:\n{context}\n\n" if context else "")
             + (f"Data collected / files produced by tools for this task:\n{tool_data}\n\n"
                if tool_data else "")
@@ -128,6 +132,10 @@ class Worker:
                     for r in result.responses)
         return result, route.model_key, cost
 
+    def _is_research(self, task: Task) -> bool:
+        return (self.department_name == "research"
+                or bool(RESEARCH_CAPABILITIES & set(task.required_capabilities)))
+
     def _use_tools(self, task: Task, route, context: str = "") -> tuple[str, float]:
         """For each tool-backed capability: the model proposes parameters, code validates
         and runs the tool, results are stored with source + timestamp. Tools that make
@@ -144,6 +152,8 @@ class Worker:
             proposal = generate_structured(
                 route.client, route.model,
                 f"Task: {task.description}\n"
+                + (f"Research method (owner rule): {RESEARCH_METHOD}\n"
+                   if self._is_research(task) else "")
                 + (f"Earlier results to build on:\n{context[:3000]}\n" if context else "")
                 + f"Project goal: {self.project.objective[:600]}\n"
                 f"Choose the parameters for the tool '{tool.name}': {tool.config.description}",

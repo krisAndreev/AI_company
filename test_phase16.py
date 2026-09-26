@@ -193,6 +193,16 @@ REPORT = {"summary": "Printable wedding planners sell for about $5-12; checklist
           "findings": [{"claim": "Typical price is $4.99-$12", "sources": [1]},
                        {"claim": "Checklists are most requested", "sources": [2]},
                        {"claim": "Invented claim", "sources": [9]}],
+          "pockets": [
+              {"name": "Budget tracker pages", "buyer": "couples planning a wedding",
+               "quotes": ["we keep going over budget"], "price": "$4.99-$12",
+               "competition": 3, "longevity": 5, "effort": 4, "sells_while_asleep": 5,
+               "repeat": 2, "sources": [1]},
+              {"name": "Guest list checklists", "buyer": "brides", "quotes": [], "price": "",
+               "competition": 5, "longevity": 5, "effort": 5, "sells_while_asleep": 5,
+               "repeat": 4, "sources": [2]},
+              {"name": "Invented pocket", "buyer": "nobody", "competition": 5, "longevity": 5,
+               "effort": 5, "sells_while_asleep": 5, "repeat": 5, "sources": [9]}],
           "open_questions": ["How many sales do top shops make?"]}
 
 
@@ -213,6 +223,12 @@ def t_research_tool():
     md = c.assets.file_path(report["id"]).read_text(encoding="utf-8")
     assert "Invented claim" not in md and "[1]" in md and "## Sources" in md
     assert report["meta"]["dropped_uncited"] == 1
+    # owner's research method: in the prompt; code totals /25, drops uncited, picks the winner
+    assert any("3 profitable pockets" in pr and "total /25" in pr for pr in fake.prompts)
+    assert [p["total"] for p in out["summary"]["pockets"]] == [24, 19]
+    assert out["summary"]["winner"] == "Guest list checklists"
+    assert "Invented pocket" not in md and "**Winner: Guest list checklists (24/25)**" in md
+    assert '"we keep going over budget"' in md
     # page text reached the model only as marked untrusted data
     page_prompt = next(pr for pr in fake.prompts if "Planner market" in pr)
     assert "UNTRUSTED web content" in page_prompt
@@ -243,6 +259,9 @@ def t_research_in_worker():
     assert c.assets.list(project_id=p.id)[0]["task_id"] == task.id
     final_prompt = fake.prompts[-1]
     assert "tools above already did the work" in final_prompt and "Typical price" in final_prompt
+    assert "3 profitable pockets" in final_prompt, "research worker must get the owner's method"
+    param_prompt = next(pr for pr in fake.prompts if "Choose the parameters" in pr)
+    assert "3 profitable pockets" in param_prompt
     return "planner used web_research -> model chose queries -> code searched/read -> task result lists the report"
 
 

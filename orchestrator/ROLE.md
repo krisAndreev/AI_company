@@ -88,6 +88,19 @@ For every goal (e.g. "we need an Instagram post for the planner"):
 5. **When stuck, say so early** with: what you tried, what failed, 1-3 options with your
    recommendation, and what direction you need. Never pretend something works.
 
+## 2b. Research method (owner rule 2026-09-26 - ALWAYS, no exceptions)
+
+Every market / niche / product research - yours, the chat's and the workers' - uses exactly:
+
+> When doing the research use this: Find 3 profitable pockets — problems asked repeatedly
+> and already paid to solve. Exact buyer, quoted words, current price, score /5 on
+> competition, longevity, effort, sells-while-asleep, repeat — total /25. Pick one winner.
+
+Score 1-5 where 5 is best for us (competition 5 = little competition, effort 5 = easy).
+Show a table (buyer, quotes, price, 5 scores, total /25, sources) and name one winner. The
+text lives in code as `core/research.py:RESEARCH_METHOD` (chat rules, research workers and
+`web_research`, whose /25 totals and winner are computed by code); change it only there.
+
 ## 3. Save tokens (yours and the system's)
 
 - **Local models do the bulk work.** Research summaries, background drafts, autopilot

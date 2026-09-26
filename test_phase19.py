@@ -315,7 +315,16 @@ def t_confirm_mode():
 
 
 check("create_project runs itself: created, planned, loop started", t_create_runs_itself)
+def t_research_rule():
+    from core.chat import SYSTEM_MAIN, SYSTEM_PROJECT
+    from core.research import RESEARCH_METHOD
+    assert "3 profitable pockets" in RESEARCH_METHOD and "total /25" in RESEARCH_METHOD
+    assert RESEARCH_METHOD in SYSTEM_MAIN and RESEARCH_METHOD in SYSTEM_PROJECT
+    return "owner's research method is part of both chat system prompts"
+
+
 check("owner gate: budget above limit / guidelines", t_owner_gate)
+check("chat rules: owner's research method", t_research_rule)
 check("add_task + invalid actions refused by code", t_add_task_and_invalid)
 check("complete_task from the owner's report; approvals need a click", t_complete_and_approve)
 check("project given by name / missing id", t_project_name_or_missing_id)
