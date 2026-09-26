@@ -374,7 +374,18 @@ def t_product_fit_and_clean():
     p = c.orchestrator.create_project("P", "x", 5)
     c.run_tool("product_builder", {**BRIEF, "page_plan": OUTLINE["pages"]}, p.id)
     assert "ProductOutline" not in fake.calls
-    return "markdown/URLs stripped; overflowing page fits 1 page (A4+Letter); cards, certificate; "            "title-heading + month removed; quote tag cleaned; fixed page plan skips outline"
+    from clients.base import ModelClientError
+    crashes = []
+    def flaky(prompt):
+        if "Page 2 of" in prompt:
+            crashes.append(1)
+            raise ModelClientError("prediction aborted, token repeat limit reached")
+        return page_reply(prompt)
+    c, _ = company({"PageContent": flaky, "ProductListing": LISTING}, "crash")
+    p = c.orchestrator.create_project("P", "x", 5)
+    out = c.run_tool("product_builder", {**BRIEF, "page_plan": OUTLINE["pages"]}, p.id)
+    assert len(crashes) == 2 and any("page 2" in w for w in out["summary"]["warnings"])
+    return "markdown/URLs stripped; overflowing page fits 1 page (A4+Letter); cards, certificate; "            "title-heading + month removed; quote tag cleaned; fixed page plan skips outline; "            "model crash -> 1 retry, then safe page"
 
 
 check("product builder: PDFs, previews, mockups, listing, bundle", t_product_build)

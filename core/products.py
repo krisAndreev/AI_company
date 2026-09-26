@@ -26,6 +26,7 @@ from pydantic import Field, field_validator, model_validator
 
 from core import graphics
 from core.design import Theme, ThemeName, font_path, rgb, theme
+from clients.base import ModelClientError
 from core.net import ToolError
 from core.schemas import StrictModel
 from core.structured import StructuredOutputError
@@ -802,22 +803,31 @@ class ProductTool(Tool):
 
         pages: list[tuple[str, list[Block]]] = []
         for i, plan in enumerate(plans, start=1):
-            try:
-                content = ctx.generate(
+            prompt = (
                     f"{head}\nPage {i} of {len(plans)}: \"{plan.title}\" - {plan.purpose}\n"
                     f"Pages in this product: {', '.join(p.title for p in plans)}\n\n"
                     f"{_BLOCK_GUIDE}\n{_page_guidance(brief.product_type)}\n"
                     "Write real, specific content: no placeholders such as 'Lorem ipsum' or "
                     "'[insert]'. Do not repeat the page title as a heading. Plain text only: no "
                     "markdown, no web addresses, no brand, app or organisation names. Everything "
-                    "must fit on ONE printed page.",
-                    PageContent, system="You write and design pages for digital products.",
-                    temperature=0.5)
-                blocks = content.blocks
-            except StructuredOutputError as e:
+                    "must fit on ONE printed page.")
+            blocks = None
+            for attempt, temp in enumerate((0.5, 0.8)):   # a model crash (e.g. a repeat loop)
+                try:                                     # gets one retry, then a safe page
+                    blocks = ctx.generate(prompt, PageContent, temperature=temp,
+                                          system="You write and design pages for digital "
+                                                 "products.").blocks
+                    break
+                except StructuredOutputError as e:
+                    ctx.log(ACTOR, "Page fallback", product=product_id, page=i,
+                            errors=e.errors[-1:])
+                    break
+                except ModelClientError as e:
+                    ctx.log(ACTOR, "Page model error", product=product_id, page=i,
+                            attempt=attempt + 1, error=str(e)[:200])
+            if blocks is None:
                 warnings.append(f"page {i} '{plan.title}': model output invalid, used a notes page")
                 blocks = [Block(type="notes", text=plan.purpose[:200], count=18)]
-                ctx.log(ACTOR, "Page fallback", product=product_id, page=i, errors=e.errors[-1:])
             blocks = tidy_blocks(plan.title, blocks)
             for fmt in self.settings.formats:
                 fitted = fit_blocks(t, fmt, plan.title, blocks)
