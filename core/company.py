@@ -34,7 +34,7 @@ from core.project_manager import ManagementError
 from core.tasks import TaskStatus
 from core.web import WebSourceStore
 from core.workers import WorkerStore
-from core.workspace import AssetStore, Workspace, slugify
+from core.workspace import AssetStore, Workspace
 
 
 class Company:
@@ -66,6 +66,8 @@ class Company:
         self.assets = AssetStore(self.db, self.workspace)
         self.web_sources = WebSourceStore(self.db)
         self.projects = ProjectStore(self.db)
+        self.workspace.project_info = lambda pid: (
+            (p := self.projects.get(pid)).name, p.created_at.date().isoformat())
         self.queue = TaskQueue(self.db)
         self.ledger = ExpenseLedger(self.db)
         self.workers = WorkerStore(self.db)
@@ -146,7 +148,7 @@ class Company:
                         "DELETE FROM web_sources WHERE project_id = ?",
                         "DELETE FROM projects WHERE id = ?"):
                 self.db.execute(sql, (project_id,))
-        folder = self.workspace.safe_path("projects", slugify(project_id, 40))
+        folder = self.workspace.project_dir(project_id, create=False)
         if folder.is_dir():
             shutil.rmtree(folder, ignore_errors=True)
         for a in files:

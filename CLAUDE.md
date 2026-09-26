@@ -51,7 +51,10 @@ the system, and ROLE.md's hard rules (legal, budgets, owner-confirmed steps) bin
   job queue (`services.py`), auth, config editor; `static/` is vanilla JS (no build
   step), `ship.js` = spaceship view, Studio view = create forms + file gallery
 - `data/company.db` — SQLite (WAL), daily backups in `data/backups/`;
-  `logs/company.log` — readable event log (rotated at 5 MB); `workspace/` — produced files
+  `logs/company.log` — readable event log (rotated at 5 MB); `workspace/` — produced files:
+  `projects/<created>_<name>_<id>/` with `INDEX.md` (all files + status), `products|campaigns/
+  <title>/v<N>_<date>/` (same title = next version, `Workspace.version_dir`), `research/<date>_…`,
+  `images|videos/<date>_<name>/` (`dated_dir`); old layout -> `scripts/reorganize_workspace.py`
 - Local engines (not in git, installed by `setup_assets.py`, hash-pinned): `assets/fonts`,
   `tools/runtime` (app-local signed MSVC DLLs), `tools/sdcpp`, `models/voices`, `models/image`
 

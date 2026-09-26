@@ -513,7 +513,7 @@ class WebResearchTool(Tool):
 
         md = self._markdown(params, provider, report, findings, sources, run_id, errors)
         folder = c.workspace.dir_for(ctx.project_id, "research")
-        path = folder / f"{slugify(params.goal, 50)}-{run_id[-6:]}.md"
+        path = folder / f"{utcnow().date().isoformat()}_{slugify(params.goal, 50)}-{run_id[-6:]}.md"
         path.write_text(md, encoding="utf-8")
         asset = c.assets.register(path, "report", f"Web research: {params.goal[:120]}",
                                   "web_research", ctx.project_id, ctx.task_id, run_id,

@@ -242,6 +242,9 @@ class CampaignTool(Tool):
         engine = image_engine_for(c)
         photos_left = self.settings.max_ai_photos if engine and engine.provider() else 0
         videos_left, cost, assets = brief.videos, 0.0, []
+        pack_dir = c.workspace.version_dir(ctx.project_id, "campaigns", brief.name)
+        images_dir = pack_dir / "images"
+        images_dir.mkdir(exist_ok=True)
         posts.sort(key=lambda p: (p["day"], p["channel"]))
         for n, post in enumerate(posts, start=1):
             d, ch = post["draft"], post["channel"]
@@ -283,8 +286,7 @@ class CampaignTool(Tool):
                     purpose=f"{ch} post day {post['day']}", format=rules["format"], layout=layout,
                     headline=d.hook, subline=brief.offer[:160], cta=rules["cta"],
                     photo_prompt=prompt, theme=brief.theme, visual=n - 1), engine, campaign_id,
-                f"campaigns/{slugify(brief.name, 30)}-{campaign_id[-6:]}/images",
-                file_stem=f"{post['date']}-{ch}", extra_meta={"channel": ch, "date": post["date"]})
+                images_dir, file_stem=f"{post['date']}-{ch}", extra_meta={"channel": ch, "date": post["date"]})
             if prompt:
                 photos_left -= 1
             cost += i_cost
@@ -292,15 +294,13 @@ class CampaignTool(Tool):
             assets += imgs
             post["files"] += imgs
 
-        pack_dir = c.workspace.dir_for(ctx.project_id, "campaigns",
-                                       f"{slugify(brief.name, 30)}-{campaign_id[-6:]}")
         blog_img = None
         if blog:
             imgs, i_cost, _, _ = create_images(
                 c, ctx.project_id, ctx.task_id, ImageParams(
                     purpose="blog featured image", format="landscape", layout="product",
                     headline=blog.title, theme=brief.theme), engine, campaign_id,
-                f"campaigns/{slugify(brief.name, 30)}-{campaign_id[-6:]}/images", file_stem="blog")
+                images_dir, file_stem="blog")
             blog_img = imgs[0]
             assets += imgs
         written = self._write_pack(c, pack_dir, brief, strategy, posts, emails, blog, blog_img,

@@ -60,6 +60,11 @@ Goal (2026-09-26): take Digital Product 1 to a live Etsy listing (shop KrokiCraf
 - 2026-09-26: added planning mode (ROLE.md 1b): plan first, then one task per owner approval.
 - 2026-09-26: project put in git and pushed to GitHub (private, `main`); ROLE.md 4 has the
   commit/push rule.
+- 2026-09-26: workspace layout for the owner: `projects/<date>_<name>_<id>/` + INDEX.md (all
+  files + status), products/campaigns in `<title>/v<N>_<date>/` (rebuild with the SAME title
+  = next version - keep titles stable when revising), research/images/videos date-prefixed.
+  Existing files: `scripts/reorganize_workspace.py --apply` (dashboard stopped; pending
+  owner). Tests 16-19 --offline pass.
 
 ## Log (last ~2 weeks; older -> HISTORY.md)
 - 2026-09-26: DP1 v2 built from Claude-written pages (16p) + 5 listing images + campaign; campaign

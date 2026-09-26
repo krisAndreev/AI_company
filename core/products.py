@@ -794,8 +794,7 @@ class ProductTool(Tool):
         t = theme(brief.theme)
         brand = brand_name(c)
         product_id = new_id("prod")
-        folder = c.workspace.dir_for(ctx.project_id, "products",
-                                     f"{slugify(brief.title, 40)}-{product_id[-6:]}")
+        folder = c.workspace.version_dir(ctx.project_id, "products", brief.title)
         warnings: list[str] = []
         ctx.log(ACTOR, "Building product", product=product_id, title=brief.title,
                 type=brief.product_type, pages=brief.pages)

@@ -88,7 +88,7 @@ def compose_video(company, project_id: str | None, task_id: str | None, params: 
     if params.voiceover and not use_voice:
         notes.append(f"no voiceover ({tts.availability(settings.voice)[1]})")
     group_id = group_id or new_id("vid")
-    folder = company.workspace.dir_for(project_id, "videos")
+    folder = company.workspace.dated_dir(project_id, "videos", params.title)
     stem = f"{slugify(params.title, 40)}-{params.format}-{group_id[-6:]}"
 
     with tempfile.TemporaryDirectory(prefix="video_") as tmp:

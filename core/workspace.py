@@ -18,6 +18,7 @@ import re
 import unicodedata
 import uuid
 from pathlib import Path
+from typing import Callable
 
 from core.db import Database
 from core.tasks import utcnow
@@ -75,15 +76,71 @@ def new_id(prefix: str) -> str:
 
 
 class Workspace:
+    """Layout (readable in Explorer, sorted by date):
+
+        projects/<created>_<project-name>_<id hex>/
+            INDEX.md                                 every file with version + status
+            products/<title>/v1_<date>/ ...          a rebuild with the same title -> v2_<date>
+            campaigns/<name>/v1_<date>/ ...
+            research/<date>_<goal>-<run>.md
+            images/<date>_<purpose>/ ...   videos/<date>_<title>/ ...
+        shared/ ...                                  runs without a project
+    """
+
     def __init__(self, root: str | Path = "workspace"):
         self.root = Path(root).resolve()
+        # project_id -> (name, created date "YYYY-MM-DD"); set by Company. Without it the
+        # folder is named by id only.
+        self.project_info: Callable[[str], tuple[str, str]] | None = None
+
+    def project_dir(self, project_id: str, create: bool = True) -> Path:
+        """The project's folder: found by its id, else created with date + name + id."""
+        key = slugify(project_id.split("_", 1)[-1], 40)
+        projects = self.safe_path("projects")
+        if projects.is_dir():
+            for d in projects.iterdir():
+                if d.is_dir() and (d.name == slugify(project_id, 40) or d.name.endswith("_" + key)):
+                    return d
+        name = slugify(project_id, 40)
+        if self.project_info is not None:
+            try:
+                title, created = self.project_info(project_id)
+                name = f"{created}_{slugify(title, 30)}_{key}"   # short: Windows 260-char paths
+            except KeyError:
+                pass
+        path = self.safe_path("projects", name)
+        if create:
+            path.mkdir(parents=True, exist_ok=True)
+        return path
 
     def dir_for(self, project_id: str | None, *parts: str) -> Path:
         """A folder for a project's output (created on demand)."""
-        path = self.safe_path(project_id and f"projects/{slugify(project_id, 40)}"
-                              or "shared", *[slugify(p, 60) for p in parts])
+        base = self.project_dir(project_id) if project_id else self.safe_path("shared")
+        parts = ["_".join(slugify(s, 60) for s in p.split("_")) for p in parts]  # keep "_" as separator
+        path = self.safe_path(*base.relative_to(self.root).parts, *parts)
         path.mkdir(parents=True, exist_ok=True)
         return path
+
+    def version_dir(self, project_id: str | None, category: str, name: str) -> Path:
+        """<category>/<name>/v<N>_<date>: the next version of a product, campaign, ..."""
+        base = self.dir_for(project_id, category, slugify(name, 40))
+        while True:
+            taken = {int(m.group(1)): d for d in base.iterdir()
+                     if d.is_dir() and (m := re.match(r"v(\d+)_", d.name))}
+            last = taken.get(max(taken, default=0))
+            if last is not None and not any(last.iterdir()):
+                return last             # a failed run left it empty: reuse the number
+            path = base / f"v{max(taken, default=0) + 1}_{utcnow().date().isoformat()}"
+            try:
+                path.mkdir()
+                return path
+            except FileExistsError:     # another run took this number at the same moment
+                continue
+
+    def dated_dir(self, project_id: str | None, category: str, name: str) -> Path:
+        """<category>/<date>_<name>: one folder per run (images, videos)."""
+        return self.dir_for(project_id, category,
+                            f"{utcnow().date().isoformat()}_{slugify(name, 40)}")
 
     def safe_path(self, *parts: str) -> Path:
         path = self.root.joinpath(*parts).resolve()
@@ -133,6 +190,7 @@ class AssetStore:
         source_img = thumb_from or (path if mime.startswith("image/") else None)
         if source_img:
             self._make_thumb(asset_id, Path(source_img))
+        self.write_index(project_id)
         return self.get(asset_id)
 
     def decide(self, asset_id: str, approve: bool, who: str = "HUMAN", note: str = "") -> dict:
@@ -144,7 +202,39 @@ class AssetStore:
             raise AssetRuleError(f"asset {asset_id}: {asset['status']} -> {new} is not allowed")
         self.db.execute("UPDATE assets SET status = ?, decided_by = ?, decided_at = ?, note = ? "
                         "WHERE id = ?", (new, who, utcnow().isoformat(), note[:500], asset_id))
+        self.write_index(asset["project_id"])
         return self.get(asset_id)
+
+    def write_index(self, project_id: str | None) -> None:
+        """INDEX.md in the project folder: every file by folder, with its status, so the
+        owner can follow versions in Explorer. Rewritten on every change; never fails a run."""
+        if not project_id:
+            return
+        try:
+            folder = self.workspace.project_dir(project_id)
+            prefix = folder.relative_to(self.workspace.root).as_posix() + "/"
+            rows = self.db.execute("SELECT id, ts, kind, title, path, status FROM assets "
+                                   "WHERE project_id = ? ORDER BY path", (project_id,)).fetchall()
+            counts = {s: sum(r["status"] == s for r in rows) for s in ASSET_STATUSES}
+            lines = [f"# Files of {folder.name}", "",
+                     f"Updated {utcnow().strftime('%Y-%m-%d %H:%M')} UTC - "
+                     + ", ".join(f"{n} {s}" for s, n in counts.items())
+                     + ". Approve or reject in the dashboard (Studio & Files); this list follows.",
+                     ""]
+            section = None
+            for r in rows:
+                rel = r["path"][len(prefix):] if r["path"].startswith(prefix) else r["path"]
+                where = rel.rsplit("/", 1)[0] if "/" in rel else "."
+                if where != section:
+                    section = where
+                    lines += ["", f"## {where}", "", "| status | file | kind | title | id |",
+                              "|---|---|---|---|---|"]
+                name = rel.rsplit("/", 1)[-1]
+                title = r["title"].replace("|", "/")
+                lines.append(f"| {r['status']} | [{name}](<{rel}>) | {r['kind']} | {title} | {r['id']} |")
+            (folder / "INDEX.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        except Exception:
+            pass
 
     # --- reading ------------------------------------------------------------------
 

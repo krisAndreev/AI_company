@@ -312,7 +312,7 @@ def _decode_b64_image(data: str) -> Image.Image:
 # --- the tool ---------------------------------------------------------------------------------------
 
 def create_images(company, project_id, task_id, params: "ImageParams", engine: ImageEngine | None,
-                  group_id: str, folder_name: str, file_stem: str | None = None,
+                  group_id: str, folder_name: "str | Path", file_stem: str | None = None,
                   extra_meta: dict | None = None) -> tuple[list[dict], float, list[str], list[str]]:
     """Render params.variants images and register them. Returns (assets, cost, notes,
     AI providers used). A failed/refused AI photo falls back to a designed background."""
@@ -325,7 +325,8 @@ def create_images(company, project_id, task_id, params: "ImageParams", engine: I
         product = order[params.visual % len(order)][1]
     else:
         product = None
-    folder = company.workspace.dir_for(project_id, *folder_name.split("/"))
+    folder = (folder_name if isinstance(folder_name, Path)
+              else company.workspace.dir_for(project_id, *folder_name.split("/")))
     assets, notes, cost, providers = [], [], 0.0, set()
     for i in range(params.variants):
         photo, provider = None, None
@@ -391,7 +392,8 @@ class ImageTool(Tool):
     def run(self, params: ImageParams, ctx: ToolContext) -> ToolOutput:
         c = ctx.company
         assets, cost, notes, providers = create_images(
-            c, ctx.project_id, ctx.task_id, params, self.engine(c), new_id("img"), "images")
+            c, ctx.project_id, ctx.task_id, params, self.engine(c), new_id("img"),
+            c.workspace.dated_dir(ctx.project_id, "images", params.purpose))
         ctx.log(ACTOR, "Created images", count=len(assets), format=params.format,
                 layout=params.layout, providers=providers, notes=notes)
         return ToolOutput(summary={"images": len(assets), "format": params.format,
