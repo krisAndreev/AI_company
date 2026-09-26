@@ -16,7 +16,10 @@ Goal (2026-09-26, owner): find a niche for teaching people to create AI e-books 
   [x] 1 project proj_0e1849bb6696 'Digital Product 3 - AI creator guide' (EUR 5, PAUSED = Claude runs it)
   [x] 2 research: winner 'Family story book with AI' 21/25 (teachers 17, coaches 15; generic
       AI-ebook/PLR dropped) -> `notes/2026-09-26_research-3-pockets.md` (asset_72d5cd396d12)
-  [ ] 3 owner confirms winner + format; then build kit (Claude writes pages), images, checklist
+  [x] 3 owner approved niche; built 'Family Story Book Kit' v1 prod_f0102510bc64 (19p A4+Letter,
+      Claude-written: 50 question cards, 7 AI prompts, planners), 7 listing images, checklist
+      (`products/family-story-book-kit/v1_2026-09-26/`, EUR 7.99)
+  [ ] 4 owner reads PDF + publishes on Etsy (PUBLISH-CHECKLIST.md); then Pinterest pins
 - Also due: measure DP1 ~2026-10-03 and DP2 ~2026-10-10 (Etsy Stats).
 
 ## Now: projects
@@ -36,7 +39,8 @@ Goal (2026-09-26, owner): find a niche for teaching people to create AI e-books 
 
 ## Now: waiting for the owner
 <!-- reviews, decisions, accounts, money, publishing -->
-- DP3: confirm niche 'Family story book with AI' (interview kit + AI prompts + book template).
+- DP3: read `family-story-book-kit-A4.pdf` (listing says 'reviewed by hand'), then publish on Etsy
+  via `PUBLISH-CHECKLIST.md`; send URL -> Claude does Pinterest.
 - ~2026-10-10: DP2 Etsy Stats (visits from Pinterest, favourites, sales). Reject old DP2 hero
   `listing-01-hero.jpg` (replaced by `listing-01-hero-square.jpg`) in the dashboard.
 - Reject old v1 drafts (Family Digital Detox Planner product + its campaign + 6 old images) and
@@ -154,6 +158,7 @@ Goal (2026-09-26, owner): find a niche for teaching people to create AI e-books 
   ROLE.md section 4 "Files and folders". Tests 16-19 --offline pass.
 
 ## Log (last ~2 weeks; older -> HISTORY.md)
+- 2026-09-26: DP3 Family Story Book Kit v1 built + 7 listing images (scratch script dp3_images.py, not in git).
 - 2026-09-26: owner switched to autonomous mode; DP3 project + niche research (family story book with AI 21/25).
 - 2026-09-26: DP2 LIVE on Etsy (EUR 6.99, title shortened to 84 chars, AI generator disclosed);
   Pinterest board 'Tennis Doubles Tips' with 4 pins (1 live, 3 scheduled Sep 29/Oct 3/Oct 7).
