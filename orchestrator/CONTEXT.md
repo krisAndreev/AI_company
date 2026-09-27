@@ -20,10 +20,9 @@ Goal (2026-09-26, owner): find a niche for teaching people to create AI e-books 
       Claude-written: 50 question cards, 7 AI prompts, planners), 7 listing images, checklist
       (`products/family-story-book-kit/v1_2026-09-26/`, EUR 7.99)
   [x] 4 owner read + published: LIVE https://www.etsy.com/listing/4583157654 (EUR 7.99)
-  [ ] 5 Pinterest: 4 pin images drafted in scratch (dp3_pins.py: questions/steps/prompt/gift, v2 layout
-      fixes not yet viewed) -> re-render into campaigns/family-story-kit-pinterest/, register, fill in
-      Chrome (board 'Family Story Ideas', link listing 4583157654, AI-modified), owner OK
-- Also due: measure DP1 ~2026-10-03 and DP2 ~2026-10-10 (Etsy Stats).
+  [x] 5 Pinterest board 'Family Story Ideas': pin 1 live 2026-09-27, pins 2-4 scheduled Sep 30 /
+      Oct 4 / Oct 8 20:00 (AI-modified, alt text). Files `campaigns/family-story-kit-pinterest/v1_2026-09-27/`
+- Next: measure DP1 ~2026-10-03, DP2 + DP3 ~2026-10-10 (Etsy Stats).
 
 ## Now: projects
 <!-- one line each: id | name | status | stage | next step | waiting for -->
@@ -39,6 +38,8 @@ Goal (2026-09-26, owner): find a niche for teaching people to create AI e-books 
   products/tennis-doubles-playbook/v1_2026-09-26/` (A4+Letter PDFs, zip, listing.md, 3 mockups);
   research `notes/2026-09-26_research-3-pockets.md`; 7 listing images + checklist; pins in
   `campaigns/doubles-playbook-pinterest/v1_2026-09-26/` (PINS.md) | measure ~2026-10-10 | owner: Etsy Stats
+- proj_0e1849bb6696 | Digital Product 3 = 'Family Story Book Kit' | PAUSED (Claude runs it) | LIVE on Etsy
+  https://www.etsy.com/listing/4583157654 (EUR 7.99, prod_f0102510bc64) + Pinterest 4 pins | measure ~2026-10-10 | owner: Etsy Stats
 
 ## Now: waiting for the owner
 <!-- reviews, decisions, accounts, money, publishing -->
@@ -100,7 +101,7 @@ Goal (2026-09-26, owner): find a niche for teaching people to create AI e-books 
   their line box -> leave clear space above buttons.
 - Honest AI disclosure everywhere: Etsy description line + Pinterest 'Mark as AI-Modified'.
   The listing says "every page was reviewed by hand" -> the owner must read the PDF first.
-- Pinterest via Chrome: `/pin-creation-tool/`, `file_upload` on the file input, drafts keep
+- Pinterest via Chrome: screenshots often time out right after clicks (renderer busy) - retry once, it recovers; `/pin-creation-tool/`, `file_upload` on the file input, drafts keep
   the schedule (date typed MM/DD/YYYY, then click the day; time via dropdown menuitem),
   topic suggestions are useless (skip), extension promo popup after publish (Esc).
   Scheduled pins: profile > Created > "Scheduled Pins" (only visible to the owner).
@@ -159,6 +160,7 @@ Goal (2026-09-26, owner): find a niche for teaching people to create AI e-books 
   ROLE.md section 4 "Files and folders". Tests 16-19 --offline pass.
 
 ## Log (last ~2 weeks; older -> HISTORY.md)
+- 2026-09-27: DP3 LIVE on Etsy (listing 4583157654, EUR 7.99); Pinterest pin 1 live, 3 scheduled.
 - 2026-09-26: DP3 Family Story Book Kit v1 built + 7 listing images (scratch script dp3_images.py, not in git).
 - 2026-09-26: owner switched to autonomous mode; DP3 project + niche research (family story book with AI 21/25).
 - 2026-09-26: DP2 LIVE on Etsy (EUR 6.99, title shortened to 84 chars, AI generator disclosed);
